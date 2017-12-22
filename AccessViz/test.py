@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import problem1
+from problem1 import lowo, zip2shp, zip2shp2
 
 import geopandas as gpd
 import zipfile
@@ -11,7 +12,7 @@ metropo=r"C:\Users\oyeda\Desktop\AUTOGIS\FINAL_ASSIGNMENT\MetropAccess_YKR_grid\
 
 mtp= gpd.read_file(metropo)
 
-problem1.lowo.extractfiles(data_zip)
+lowo.extractfiles(data_zip=data_zip)
 
 
 #For testing
@@ -20,3 +21,13 @@ problem1.lowo.extractfiles(data_zip)
     
     #xx="HelsinkiRegion_TravelTimeMatrix2015/6016xxx/travel_times_to_ 6016696.txt"
     #xx[44:]
+    
+#bytes
+#data_zip.read()
+#data_zip.open(filename)
+
+zip2shp.readzip(data_zip=data_zip, userinput=[5991,342,5991603,2524,245], grid_shp=mtp, filepath= r"C:\Users\oyeda\Desktop\AUTOGIS\FINAL_ASSIGNMENT\merged")
+zip2shp2.readzipPrompt(data_zip=data_zip, grid_shp=mtp,filepath=r"C:\Users\oyeda\Desktop\AUTOGIS\FINAL_ASSIGNMENT\merged" )
+
+problem1.zip2shp.readzipPrompt
+problem1.zip2shp2.readzipPrompt
