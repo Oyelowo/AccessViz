@@ -42,7 +42,7 @@ import zipfile
 class lowo:
 #    def __init__(self):
 #        ''' Constructor for this class. '''
-    def extractfiles(data_zip, userinput):
+    def extractfiles(data_zip, userinput, filepath, file_format=".txt"):
         '''
         data: this is the zipped data which should be specified.
         This function extracts matrices(files) from the zipped Helsinki Region Travel
@@ -89,6 +89,10 @@ class lowo:
                     bytes = data_zip.read(filename)
                     #print the file size
                     print('has',len(bytes),'bytes')
+                    tt_matrices= pd.read_csv(filename, sep=";")
+                    #save the selected files into same folder
+                    tt_matrices.to_csv(filepath + "/"+str(element)+file_format, sep=";")
+                    
                     
                     #extract the files
                     data_zip.extract(filename)
@@ -117,24 +121,7 @@ class lowo:
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    def extractfilesPrompt(data_zip):
+    def extractfilesPrompt(data_zip, filepath, sep=";", file_format=".txt"):
         '''
         data: this is the zipped data which should be specified.
         This function extracts matrices(files) from the zipped Helsinki Region Travel
@@ -184,6 +171,9 @@ class lowo:
                     
                     #extract the files
                     data_zip.extract(filename)
+                    tt_matrices= pd.read_csv(filename, sep=";")
+                    #save the selected files into same folder
+                    tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)
                     
 #                    kk = pd.read_csv(filename, sep=";")
 #                    for i in kk:
@@ -224,7 +214,7 @@ class zip2shp:
                     tt_matrices= pd.read_csv(filename, sep=";")
                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                     #print(merged_metro)
-                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged.shp"+str(element))
+                    merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
                     
                     
         #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
@@ -258,7 +248,7 @@ class zip2shp2:
                     tt_matrices= pd.read_csv(filename, sep=";")
                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                     #print(merged_metro)
-                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged.shp"+str(element))
+                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged" + ".shp" +str(element))
                     
                     
         #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
