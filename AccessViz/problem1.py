@@ -82,6 +82,7 @@ class lowo:
                 bytes = data_zip.read(element_file)
                     #print the file size
                 print('has',len(bytes),'bytes')
+                print("\n")
                 data_zip.extract(element_file)
                 tt_matrices= pd.read_csv(element_file, sep=";")
                     #save the selected files into same folder
@@ -152,6 +153,7 @@ class lowo:
                     bytes = data_zip.read(element_file)
                         #print the file size
                     print('has',len(bytes),'bytes')
+                    print("\n")
                     data_zip.extract(element_file)
                     tt_matrices= pd.read_csv(element_file, sep=";")
                         #save the selected files into same folder
@@ -235,6 +237,7 @@ class lowo:
                     bytes = data_zip.read(filename)
                     #print the file size
                     print('has',len(bytes),'bytes')
+                    print("\n")
                     tt_matrices= pd.read_csv(filename, sep=";")
                     #save the selected files into same folder
                     tt_matrices.to_csv(filepath + "/"+str(element)+file_format, sep=";")
@@ -314,6 +317,7 @@ class lowo:
                     bytes = data_zip.read(filename)
                     #print the file size
                     print('matrix ', element, 'has',len(bytes),'bytes')
+                    print("\n")
                     
                     #extract the files
                     data_zip.extract(filename)
@@ -380,6 +384,7 @@ class zip2shp:
                 bytes = data_zip.read(element_file)
                     #print the file size
                 print('has',len(bytes),'bytes')
+                print("\n")
                     
                 tt_matrices= pd.read_csv(element_file, sep=";")
                 merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
@@ -433,6 +438,7 @@ class zip2shp:
                 bytes = data_zip.read(element_file)
                     #print the file size
                 print('has',len(bytes),'bytes')
+                print("\n")
                     
                 tt_matrices= pd.read_csv(element_file, sep=";")
                 merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
@@ -526,56 +532,107 @@ class zip2shp:
     
     
     
+
     
     
     
+    def readzipAllprompt(data_zip, grid_shp, filepath):
+        userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
+        namelist= data_zip.namelist()
+        m_list=[]
+        for element in userinput:
+            #concatenate the input with the standard names of the file
+            element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            #now, check if the file is in not namelist of all the files in the ziped folder.
+            #if it is not, give the warning
+            if element_file not in namelist:
+                print("WARNING: The specified matrix {0} is not available".format(element))
+                print("\n")
+            else:
+                print("Matrix {0} is available".format(element))
+                m_list.append(element)
+                                    #check for the progress
+                print("Processing file travel_times_to_{0}.txt.. Progress: {1}/{2}".format(element,len([i for i in range(len(m_list))]), len(userinput)))
+                
+                #The above can also simply be done as below
+                #slice the string. This is used for the following step, just
+                #to know which of the matrix is presently being extracted.
+                #f_slice=filename[44:]
+                #print("processing file {0}.. Progress: {1}/{2}".format(f_slice,len([i for i in range(len(m_list))]), len(m_list)))
+                    
+                bytes = data_zip.read(element_file)
+                    #print the file size
+                print('has',len(bytes),'bytes')
+                print("\n")
+                tt_matrices= pd.read_csv(element_file, sep=";")
+                #print(tt_matrices)
+                #I used the max function below because there are nodata rows marked with -1
+                #hence, unique() might not work as wanted because there would be -1 and the to_id number of the dataframa"
+                #I had to first convert to integer becase without this, it was adding .0 which will affect later
+                #destination = str((tt_matrices["to_id"].max()).astype(int))
+                #rename travel time columns tohave unique id
+                tt_matrices.columns = [str(col) +"_"+ str(element) for col in tt_matrices.columns]
+                #tt_matrices.rename(columns = {"pt_r_tt": ("pt_r_tt_" + destination)}, inplace = True)
+                #The above can also be done by following the next two steps below:
+            #    tt_col_id = dict({"pt_r_tt": ("pt_r_tt_" + destination) })
+            #    aa.rename(columns = tt_col_id, inplace=True)
+                #merge the grid with the  travel time matrices
+                merged_metro = grid_shp.merge(tt_matrices,  left_on="YKR_ID", right_on="from_id"+"_"+str(element))
+                merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/mergedAll" + ".shp" +str(element))
+            
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-   
 # =============================================================================
-#     def readzipPrompt(data_zip, grid_shp, filepath):
-#         userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
+#     def readzipAll(data_zip,userinput, grid_shp, filepath):
+#          #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
 #         namelist= data_zip.namelist()
 #         m_list=[]
-#         for filename in namelist:
-#             for element in userinput:
-#                 if len(str(element))==7 and str(element) in filename:
-#                     m_list.append(element)
-#                     tt_matrices= pd.read_csv(filename, sep=";")
-#                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
-#                     print(merged_metro)
-#                     merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged.shp"+str(element))
-#     
-#     
-#                 #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
-#         absentinput= [i for i in userinput if i not in m_list]
-#         
-#         #check if all of the imputed values does not exist
-#         if len(absentinput)==len(userinput):
-#             print("all the inputs do not exist")
+#         for element in userinput:
+#             #concatenate the input with the standard names of the file
+#             element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+#             #now, check if the file is in not namelist of all the files in the ziped folder.
+#             #if it is not, give the warning
+#             if element_file not in namelist:
+#                 print("WARNING: The specified matrix {0} is not available".format(element))
+#                 print("\n")
+#             else:
+#                 print("Matrix {0} is available".format(element))
+#                 m_list.append(element)
+#                                     #check for the progress
+#                 print("Processing file travel_times_to_{0}.txt.. Progress: {1}/{2}".format(element,len([i for i in range(len(m_list))]), len(userinput)))
+#                 
+#                 #The above can also simply be done as below
+#                 #slice the string. This is used for the following step, just
+#                 #to know which of the matrix is presently being extracted.
+#                 #f_slice=filename[44:]
+#                 #print("processing file {0}.. Progress: {1}/{2}".format(f_slice,len([i for i in range(len(m_list))]), len(m_list)))
+#                     
+#                 bytes = data_zip.read(element_file)
+#                     #print the file size
+#                 print('has',len(bytes),'bytes')
+#                 print("\n")
+#                 tt_matrices= pd.read_csv(element_file, sep=";")
+#                 #print(tt_matrices)
+#                 #I used the max function below because there are nodata rows marked with -1
+#                 #hence, unique() might not work as wanted because there would be -1 and the to_id number of the dataframa"
+#                 #I had to first convert to integer becase without this, it was adding .0 which will affect later
+#                 #destination = str((tt_matrices["to_id"].max()).astype(int))
+#                 #rename travel time columns tohave unique id
+#                 tt_matrices.columns = [str(col) +"_"+ str(element) for col in tt_matrices.columns]
+#                 #tt_matrices.rename(columns = {"pt_r_tt": ("pt_r_tt_" + destination)}, inplace = True)
+#                 #The above can also be done by following the next two steps below:
+#             #    tt_col_id = dict({"pt_r_tt": ("pt_r_tt_" + destination) })
+#             #    aa.rename(columns = tt_col_id, inplace=True)
+#                 #merge the grid with the  travel time matrices
+#                 merged_metro = grid_shp.merge(tt_matrices,  left_on="YKR_ID", right_on="from_id"+"_"+str(element))
+#         merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged" + ".shp")
 #             
-#             #check for those that are not included in the matrices
-#         elif any(absentinput) not in m_list:
-#             #warn that they do not exist
-#             print("WARNING: ", absentinput, ".txt do not exist")
-#             #check how many of them are not in the matrices
-#             print(len(absentinput), "of the inputs are not included in the matrices")            
-#     
-#     
-#     
 # =============================================================================
-    
-    
-    
-    
+
+
+
+
+
     
     
     
