@@ -160,7 +160,6 @@ class visual:
         #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist=data_zip.namelist()
         m_list=[]
-        destination_style='circle'
         #iterate over the userinput, to get all its element/values
         for element in userinput:
             #concatenate the input with the standard names of the file
@@ -294,8 +293,9 @@ class visual:
                     # Select only necessary columns for our plotting to keep the amount of data minumum
                     #df = data[['x', 'y', 'walk_t','walk_t_ud', 'car_r_t','car_r_t_ud', 'from_id', 'label_wt', "label_car"]]
                     df = merged_metro[['x', 'y',"YKR_ID", tt_col,tt_col+"_ud","from_id" ,'label_' + tt_col]]
-                    df_dest_id= df.loc[df['YKR_ID']==element]
                     dfsource = ColumnDataSource(data=df)
+                    
+                    df_dest_id= df.loc[df['YKR_ID']==element]
                     dfsource_dest_id = ColumnDataSource(data=df_dest_id)
                     # Specify the tools that we want to use
                     TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
@@ -319,13 +319,23 @@ class visual:
                                     "car_m_t: Travel time in minutes from origin to destination by private car in midday traffic",
                                     "car_m_d: Distance in meters of the private car route in midday traffic"]
                                                         
-                    
+                    title=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
+                    index=title.find('destination')
+                    if 'destination' in title:
+                        title_matrix=title[:index+len('destination')] + ' ' + str(element) +  title[index+len('destination'):]
                     #here, for the title. i got the location of the specified travel mode(tt_col), then, with its
         #                    with its index, i got the corresponsding location in the list which was arranged according to the
         #                    to the columns of the dataframe(tt_matrices) too. 2 is subracted(i.e -2) because, the list_of_titles
         #                    is shorter by 2, as it does not include from_id or to_id which are not variables of interest here but the travel modes only.
+        
+                    elif 'Distance' in title: 
+                        title_matrix=title + ' to ' + str(element) 
+                       
+                    
                     if map_type=='interactive':
-                        p = figure(title=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2], tools=TOOLS,
+                    
+                        
+                        p = figure(title=title_matrix, tools=TOOLS,
                                      plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
                      
                         
@@ -376,14 +386,14 @@ class visual:
                             circle = p.circle(x=[dest_grid_x], y=[dest_grid_y], name="point", size=6, color="blue")
                         
                             phover = HoverTool(renderers=[circle])
-                            phover.tooltips=[("Destination", str(element))]
+                            phover.tooltips=[("Destination Grid:", str(element))]
                             p.add_tools(phover)
                            
                         elif destination_style=='grid':
                             grid_dest_id= p.patches('x', 'y', source=dfsource_dest_id, name='grid', color='blue')
                         
                             ghover_dest_id = HoverTool(renderers=[grid_dest_id])
-                            ghover_dest_id.tooltips=[("DESTINATION ID", str(element))] 
+                            ghover_dest_id.tooltips=[("DESTINATION GRID", str(element))] 
                             p.add_tools(ghover_dest_id)
                        
                         
@@ -417,10 +427,10 @@ class visual:
                         
                         dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=3)
                         
-        
+       
                         #plt.legend(["roads", "metro line","Rautatientori"])
-                        title_map=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
-                        plt.title(title_map[:46] + '\n'+ title_map[46:])
+                        #title_map=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
+                        plt.title(title_matrix[:46] + '\n'+ title_matrix[46:])
                         
                         #north arrow in the southeastern corner
                         my_map.text(x=df['x'].max()[2],y=df['y'].min()[2], s='N\n^', ha='center', fontsize=23, family='Courier new', rotation = 0)
