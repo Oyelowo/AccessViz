@@ -237,14 +237,40 @@ class visual:
                     palette4.reverse()
                     color_mapper = LogColorMapper(palette=palette4)
                     #color_mapper = ContinuousColorMapper(palette=palette4)
+                 
                     
-                    if tt_col[-1]== 't':
-                        p = figure(title="Travel times to The Grid", tools=TOOLS,
-                               plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
-                    elif tt_col[-1]== 'd':
-                        p = figure(title="Travel distances to The Grid", tools=TOOLS,
-                               plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
-                   
+                    list_of_titles = ["walk_t: Travel time in minutes from origin to destination by walking",
+                                      "walk_d: Distance in meters of the walking route",
+                                    "pt_r_tt: Travel time in minutes from origin to destination by public transportation in rush hour traffic", 
+                                    "pt_r_t:	 Travel time in minutes from origin to destination by public transportation in rush hour traffic",
+                                    "pt_r_d:	 Distance in meters of the public transportation route in rush hour traffic",
+                                    "pt_m_tt: Travel time in minutes from origin to destination by public transportation in midday traffic",
+                                    "pt_m_t:	 Travel time in minutes from origin to destination by public transportation in midday traffic",
+                                    "pt_m_d:	 Distance in meters of the public transportation route in midday traffic",
+                                    "car_r_t: Travel time in minutes from origin to destination by private car in rush hour traffic",
+                                    "car_r_d: Distance in meters of the private car route in rush hour traffic",
+                                    "car_m_t: Travel time in minutes from origin to destination by private car in midday traffic",
+                                    "car_m_d: Distance in meters of the private car route in midday traffic"]
+                                                        
+                    
+                    #here, for the title. i got the location of the specified travel mode(tt_col), then, with its
+#                    with its index, i got the corresponsding location in the list which was arranged according to the
+#                    to the columns of the dataframe(tt_matrices) too. 2 is subracted(i.e -2) because, the list_of_titles
+#                    is shorter by 2, as it does not include from_id or to_id which are not variables of interest here but the travel modes only.
+                    p = figure(title=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2], tools=TOOLS,
+                                 plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
+                 
+                    
+                    
+#                    This can be used if you want a more generalised title
+#                    differentiating just travel times and distances and not the meanas.
+#                    if tt_col[-1]== 't':
+#                        p = figure(title="Travel times to The Grid", tools=TOOLS,
+#                               plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
+#                    elif tt_col[-1]== 'd':
+#                        p = figure(title="Travel distances to The Grid", tools=TOOLS,
+#                               plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
+#                   
                     
                     # Do not add grid line
                     p.grid.grid_line_color = None
