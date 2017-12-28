@@ -47,28 +47,36 @@ from bokeh.palettes import RdYlGn11 as palette2
 from bokeh.palettes import BrBG10 as palette3
 from bokeh.palettes import RdYlGn9 as palette4
 
-multiples=[-2, -1, 1, 2]
-pct=0.1
-lower_limit=5
-upper_limit=200,
-step=5
-label_upper_limit=60
-truncate=True
-pct_classes=[1,10,50,90,99,100]
-n_classes=8
-class_type="Quantiles"
-classification='pysal_class'
-map_type='interactive'
-destination_style='grid'
-hinge=1.5
+# =============================================================================
+# multiples=[-2, -1, 1, 2]
+# pct=0.1
+# lower_limit=5
+# upper_limit=200,
+# step=5
+# label_upper_limit=60
+# truncate=True
+# pct_classes=[1,10,50,90,99,100]
+# n_classes=8
+# class_type="Quantiles"
+# classification='pysal_class'
+# map_type='interactive'
+# destination_style='grid'
+# hinge=1.5
+# =============================================================================
 
-#
+#data_zip,userinput, map_type, grid_shp, tt_col, filepath,  destination_style=destination_style,        
+# =============================================================================
+#             classification=classification, class_type=class_type, n_classes=n_classes,
+#             multiples=multiples,  pct=pct, hinge=hinge, truncate=truncate, pct_classes=pct_classes,
+#             lower_limit=lower_limit, 
+#             upper_limit=upper_limit, step=step, label_upper_limit=label_upper_limit):
+#         ''' some details he
+# =============================================================================
 class visual:
-    def vis(data_zip,userinput, map_type, grid_shp, tt_col, filepath,  destination_style=destination_style,        
-            classification=classification, class_type=class_type, n_classes=n_classes,
-            multiples=multiples,  pct=pct, hinge=hinge, truncate=truncate, pct_classes=pct_classes,
-            lower_limit=lower_limit, 
-            upper_limit=upper_limit, step=step, label_upper_limit=label_upper_limit):
+    def vis(data_zip,userinput, tt_col, filepath, grid_shp,  map_type='interactive', destination_style='grid',        
+            classification='pysal_class', class_type="Quantiles", n_classes=8,
+            multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
+            lower_limit=5, upper_limit=200, step=5, label_upper_limit=60):
         ''' some details here
         ststg
         srtgsrtg
@@ -430,7 +438,7 @@ class visual:
        
                         #plt.legend(["roads", "metro line","Rautatientori"])
                         #title_map=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
-                        plt.title(title_matrix[:46] + '\n'+ title_matrix[46:])
+                        plt.title(title_matrix[:58] + '\n'+ title_matrix[58:], fontsize=8)
                         
                         #north arrow in the southeastern corner
                         my_map.text(x=df['x'].max()[2],y=df['y'].min()[2], s='N\n^', ha='center', fontsize=23, family='Courier new', rotation = 0)
@@ -443,7 +451,7 @@ class visual:
                         #resize the map to fit in thr legend.
                         mapBox = my_map.get_position()
                         my_map.set_position([mapBox.x0, mapBox.y0, mapBox.width*0.6, mapBox.height*0.7])
-                        my_map.legend()                
+                        my_map.legend(loc=2, prop={'size': 3})                
                         
                         #plt.show()
                         

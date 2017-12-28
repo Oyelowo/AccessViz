@@ -1,4 +1,5 @@
 
+
 # -*- coding: utf-8 -*-
 """
 Created on Fri Dec 22 10:15:11 2017
@@ -350,9 +351,9 @@ class lowo:
 #extractfiles(data=data_zip)
     
 
-
+#separate_folder=False
 class zip2shp:   
-    def readzip1(data_zip,userinput, grid_shp, filepath):
+    def readzip1(data_zip,userinput, grid_shp, filepath, separate_folder=False):
         #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist= data_zip.namelist()
         m_list=[]
@@ -384,8 +385,13 @@ class zip2shp:
                 tt_matrices= pd.read_csv(element_file, sep=";")
                 merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                 #print(merged_metro)
-                merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
-                    
+                #merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
+                 
+                if separate_folder==True:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element))                
+                else:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+               
                     
         #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
         absentinput= [i for i in userinput if i not in m_list]
@@ -405,7 +411,7 @@ class zip2shp:
     
 
   
-    def readzipPrompt1(data_zip, grid_shp, filepath):
+    def readzipPrompt1(data_zip, grid_shp, filepath, separate_folder=False):
         userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist= data_zip.namelist()
         m_list=[]
@@ -438,8 +444,11 @@ class zip2shp:
                 tt_matrices= pd.read_csv(element_file, sep=";")
                 merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                 #print(merged_metro)
-                merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged" + ".shp" +str(element))
-                
+                if separate_folder==True:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element))                
+                else:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+       
                     
         #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
         absentinput= [i for i in userinput if i not in m_list]
@@ -461,7 +470,7 @@ class zip2shp:
     
     
    
-    def readzip2(data_zip,userinput, grid_shp, filepath):
+    def readzip2(data_zip,userinput, grid_shp, filepath, separate_folder=False):
         #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist= data_zip.namelist()
         m_list2=[]
@@ -475,8 +484,11 @@ class zip2shp:
                     tt_matrices= pd.read_csv(filename, sep=";")
                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                     #print(merged_metro)
-                    merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
-                    
+                    if separate_folder==True:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element))                
+                    else:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+       
                     
         #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
         absentinput= [i for i in userinput if i not in m_list2]
@@ -494,7 +506,7 @@ class zip2shp:
     
     
   
-    def readzipPrompt2(data_zip, grid_shp, filepath):
+    def readzipPrompt2(data_zip, grid_shp, filepath, separate_folder=False):
         userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist= data_zip.namelist()
         m_list2=[]
@@ -508,7 +520,12 @@ class zip2shp:
                     tt_matrices= pd.read_csv(filename, sep=";")
                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                     #print(merged_metro)
-                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/merged" + ".shp" +str(element))
+                    
+                    if separate_folder==True:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element))                
+                    else:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+       
                     
                     
         #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
@@ -715,5 +732,3 @@ class zip2shp:
     #6016696, 6015141, 5991603, 5991515, 5789455,9485399, 5789456, 4,2545,54646, 5802791, 8897
     
     #xx="HelsinkiRegion_TravelTimeMatrix2015/6016xxx/travel_times_to_ 6016696.txt"
-
-    #xx[44:]
