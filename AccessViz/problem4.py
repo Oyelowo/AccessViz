@@ -67,7 +67,7 @@ class AccessVizError(Exception):
     pass
 
 class visual_comp:
-    def vis_compare(data_zip,userinput, filepath, grid_shp, compare_mod, visualisation=True, map_type='interactive', destination_style='grid',        
+    def vis_compare(data_zip,userinput, filepath, grid_shp, compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',        
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
             lower_limit=5, upper_limit=200, step=5, label_upper_limit=60):
@@ -121,7 +121,7 @@ class visual_comp:
     #                            break
                         elif len(compare_mod)==2:
                             if compare_mod[0]==compare_mod[1]:
-                                raise AccessVizError("WARNING: You are comparing the same travel mode\n")
+                                raise AccessVizError("WARNING: You are comparing the same travel modes\n")
     #                            break
                             elif compare_mod[0][-1] != compare_mod[1][-1]:
                                 raise AccessVizError("WARNING!:You cannot compare Travel Distance with Travel Time!!!\n")
