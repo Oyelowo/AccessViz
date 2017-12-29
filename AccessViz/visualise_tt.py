@@ -31,6 +31,7 @@ import pysal as ps
 
 import numpy as np
 import pandas as pd
+from get_geom import get_geom
 
 #from bokeh.core.properties import values
 
@@ -82,89 +83,6 @@ class visual:
         srtgsrtg
         srtgsrtg'''
         
-                #It is always a good practice to slice your functions into small pieces which 
-        #is what we have done here:
-        def getXYCoords(geometry, coord_type):
-            """ Returns either x or y coordinates from  geometry coordinate sequence. Used with LineString and Polygon geometries."""
-            if coord_type == 'x':
-                return geometry.coords.xy[0]
-            elif coord_type == 'y':
-                return geometry.coords.xy[1]
-        
-        def getPolyCoords(geometry, coord_type):
-            """ Returns Coordinates of Polygon using the Exterior of the Polygon."""
-            ext = geometry.exterior
-            return getXYCoords(ext, coord_type)
-        
-        def getLineCoords(geometry, coord_type):
-            """ Returns Coordinates of Linestring object."""
-            return getXYCoords(geometry, coord_type)
-        
-        def getPointCoords(geometry, coord_type):
-            """ Returns Coordinates of Point object."""
-            if coord_type == 'x':
-                return geometry.x
-            elif coord_type == 'y':
-                return geometry.y
-        
-        def multiGeomHandler(multi_geometry, coord_type, geom_type):
-            """
-            Function for handling multi-geometries. Can be MultiPoint, MultiLineString or MultiPolygon.
-            Returns a list of coordinates where all parts of Multi-geometries are merged into a single list.
-            Individual geometries are separated with np.nan which is how Bokeh wants them.
-            # Bokeh documentation regarding the Multi-geometry issues can be found here (it is an open issue)
-            # https://github.com/bokeh/bokeh/issues/2321
-            """
-        
-            for i, part in enumerate(multi_geometry):
-                # On the first part of the Multi-geometry initialize the coord_array (np.array)
-                if i == 0:
-                    if geom_type == "MultiPoint":
-                        coord_arrays = np.append(getPointCoords(part, coord_type), np.nan)
-                    elif geom_type == "MultiLineString":
-                        coord_arrays = np.append(getLineCoords(part, coord_type), np.nan)
-                    elif geom_type == "MultiPolygon":
-                        coord_arrays = np.append(getPolyCoords(part, coord_type), np.nan)
-                else:
-                    if geom_type == "MultiPoint":
-                        coord_arrays = np.concatenate([coord_arrays, np.append(getPointCoords(part, coord_type), np.nan)])
-                    elif geom_type == "MultiLineString":
-                        coord_arrays = np.concatenate([coord_arrays, np.append(getLineCoords(part, coord_type), np.nan)])
-                    elif geom_type == "MultiPolygon":
-                        coord_arrays = np.concatenate([coord_arrays, np.append(getPolyCoords(part, coord_type), np.nan)])
-        
-            # Return the coordinates
-            return coord_arrays
-        
-        
-        def getCoords(row, geom_col, coord_type):
-            """
-            Returns coordinates ('x' or 'y') of a geometry (Point, LineString or Polygon) as a list (if geometry is LineString or Polygon).
-            Can handle also MultiGeometries.
-            """
-            # Get geometry
-            geom = row[geom_col]
-        
-            # Check the geometry type
-            gtype = geom.geom_type
-        
-            # "Normal" geometries
-            # -------------------
-        
-            if gtype == "Point":
-                return getPointCoords(geom, coord_type)
-            elif gtype == "LineString":
-                return list( getLineCoords(geom, coord_type) )
-            elif gtype == "Polygon":
-                return list( getPolyCoords(geom, coord_type) )
-        
-            # Multi geometries
-            # ----------------
-        
-            else:
-                return list( multiGeomHandler(geom, coord_type, gtype) )
-        
-        
         #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist=data_zip.namelist()
         m_list=[]
@@ -198,15 +116,15 @@ class visual:
                 
                 #This is done to handle matrices with nodata at all. e.g: matrix"6016696"
                 if tt_matrices['to_id'].max()==-1:
-                    print('the MATRIX- {0} is empty and has nodata'.format(element))
+                    print('The MATRIX- {0} is empty and has nodata'.format(element))
                     print('\n')
                 else:
                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                     #print(merged_metro)
                     #Calculate the x and y coordinates of the grid.
-                    merged_metro['x'] = merged_metro.apply(getCoords, geom_col="geometry", coord_type="x", axis=1)
+                    merged_metro['x'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
         
-                    merged_metro['y'] = merged_metro.apply(getCoords, geom_col="geometry", coord_type="y", axis=1)
+                    merged_metro['y'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
                     
                     #NOTE: I CHOSE TO DEAL WITH NODATA BY EXCLUDING THEM.
                     merged_metro= merged_metro.loc[merged_metro.loc[:, tt_col]!=-1]
@@ -315,18 +233,18 @@ class visual:
                  
                     
                     list_of_titles = ["walk_t: Travel time in minutes from origin to destination by walking",
-                                      "walk_d: Distance in meters of the walking route",
-                                    "pt_r_tt: Travel time in minutes from origin to destination by public transportation in rush hour traffic", 
-                                    "pt_r_t:	 Travel time in minutes from origin to destination by public transportation in rush hour traffic",
-                                    "pt_r_d:	 Distance in meters of the public transportation route in rush hour traffic",
-                                    "pt_m_tt: Travel time in minutes from origin to destination by public transportation in midday traffic",
-                                    "pt_m_t:	 Travel time in minutes from origin to destination by public transportation in midday traffic",
-                                    "pt_m_d:	 Distance in meters of the public transportation route in midday traffic",
-                                    "car_r_t: Travel time in minutes from origin to destination by private car in rush hour traffic",
-                                    "car_r_d: Distance in meters of the private car route in rush hour traffic",
-                                    "car_m_t: Travel time in minutes from origin to destination by private car in midday traffic",
-                                    "car_m_d: Distance in meters of the private car route in midday traffic"]
-                                                        
+                                                  "walk_d: Distance in meters of the walking route",
+                                                "pt_r_tt: Travel time in minutes from origin to destination by public transportation in rush hour traffic(including waiting time at home)", 
+                                                "pt_r_t:	 Travel time in minutes from origin to destination by public transportation in rush hour traffic(excluding waiting time at home)",
+                                                "pt_r_d:	 Distance in meters of the public transportation route in rush hour traffic",
+                                                "pt_m_tt: Travel time in minutes from origin to destination by public transportation in midday traffic(including waiting time at home)",
+                                                "pt_m_t:	 Travel time in minutes from origin to destination by public transportation in midday traffic(excluding waiting time at home)",
+                                                "pt_m_d:	 Distance in meters of the public transportation route in midday traffic",
+                                                "car_r_t: Travel time in minutes from origin to destination by private car in rush hour traffic",
+                                                "car_r_d: Distance in meters of the private car route in rush hour traffic",
+                                                "car_m_t: Travel time in minutes from origin to destination by private car in midday traffic",
+                                                "car_m_d: Distance in meters of the private car route in midday traffic"]
+                                                                    
                     title=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
                     index=title.find('destination')
                     if 'destination' in title:
@@ -438,7 +356,7 @@ class visual:
        
                         #plt.legend(["roads", "metro line","Rautatientori"])
                         #title_map=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
-                        plt.title(title_matrix[:58] + '\n'+ title_matrix[58:], fontsize=8)
+                        plt.title(title_matrix[:59] + '\n'+ title_matrix[59:], fontsize=8)
                         
                         #north arrow in the southeastern corner
                         my_map.text(x=df['x'].max()[2],y=df['y'].min()[2], s='N\n^', ha='center', fontsize=23, family='Courier new', rotation = 0)
@@ -450,7 +368,7 @@ class visual:
                         
                         #resize the map to fit in thr legend.
                         mapBox = my_map.get_position()
-                        my_map.set_position([mapBox.x0, mapBox.y0, mapBox.width*0.6, mapBox.height*0.7])
+                        my_map.set_position([mapBox.x0, mapBox.y0, mapBox.width*0.6, mapBox.height*0.9])
                         my_map.legend(loc=2, prop={'size': 3})                
                         
                         #plt.show()
@@ -470,15 +388,11 @@ class visual:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")    
             print("\n")
         
-
-
-
-
 
 
 

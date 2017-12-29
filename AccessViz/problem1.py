@@ -100,7 +100,7 @@ class lowo:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")        
             print("\n")
@@ -171,7 +171,7 @@ class lowo:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")    
             print("\n")
@@ -262,7 +262,7 @@ class lowo:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")            
     
@@ -341,7 +341,7 @@ class lowo:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")   
             print("\n")
@@ -403,7 +403,7 @@ class zip2shp:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")            
             print("\n")
@@ -460,7 +460,7 @@ class zip2shp:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")    
             print("\n")
@@ -500,7 +500,7 @@ class zip2shp:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list2:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")            
     
@@ -538,7 +538,7 @@ class zip2shp:
             #check for those that are not included in the matrices
         elif any(absentinput) not in m_list2:
             #warn that they do not exist
-            print("WARNING: ", absentinput, ".txt do not exist")
+            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
             #check how many of them are not in the matrices
             print(len(absentinput), "of the inputs are not included in the matrices")            
     
