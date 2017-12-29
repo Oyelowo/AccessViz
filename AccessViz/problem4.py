@@ -62,6 +62,10 @@ from bokeh.palettes import BrBG10 as palette3
 from bokeh.palettes import RdYlGn9 as palette4
 from get_geom import get_geom
 
+class AccessVizError(Exception):
+    """Base class for exceptions in this AccessViz module."""
+    pass
+
 class visual_comp:
     def vis_compare(data_zip,userinput, filepath, grid_shp, compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',        
             classification='pysal_class', class_type="Quantiles", n_classes=8,
@@ -98,32 +102,33 @@ class visual_comp:
                     print("\n")
                         
                     tt_matrices= pd.read_csv(element_file, sep=";")
-                
-                    if any(x in [i for i in tt_matrices.columns] for x in compare_mod)==False:
-                                       
-                        if len(compare_mod)==1:
-                            print("The travel mode", str(compare_mod).strip('[]'), 'is not available')
-                            print("Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
+                    
+                    column_list=[i for i in tt_matrices.columns]
+                    
+                    absent_col= [i for i in compare_mod if i not in column_list]
+                    #find if any of the items of the listed transport modes is/are not column(s) in the matrix dataframe
+                    if any(compare_mod) not in column_list:
+                        if len(absent_col)==1:
+                            print("The travel mode", str(absent_col).strip('[]'), "is not available. Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
                             break
-                        else:
-                            print("The travel modes:", str(compare_mod).strip('[]'), ', are not available')
-                            print("Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
+                        elif len(absent_col)>1:
+                            print("The travel modes:", str(absent_col).strip('[]'), ", are not available. Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
                             break
                         
-                    elif len(compare_mod)> 2:
+                    if len(compare_mod)> 2:
                 #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
-                            print("WARNING: More than two travel modes are not allowed. Specify only two similar travel modes(i.e either distance or time but not both at thesame time)")
-                            break
+                            raise AccessVizError("WARNING: More than two travel modes are not allowed. Specify only two similar travel modes(i.e either distance or time but not both at thesame time)")
+#                            break
                     elif len(compare_mod)==2:
                         if compare_mod[0]==compare_mod[1]:
-                            print("WARNING: You are comparing the same travel mode\n")
-                            break
+                            raise AccessVizError("WARNING: You are comparing the same travel mode\n")
+#                            break
                         elif compare_mod[0][-1] != compare_mod[1][-1]:
-                            print("WARNING!:You cannot compare Travel Distance with Travel Time!!!\n")
-                            break
+                            raise AccessVizError("WARNING!:You cannot compare Travel Distance with Travel Time!!!\n")
+#                            break
                     elif len(compare_mod)==1:
-                            print("WARNING: You have specified just one travel mode. \n One travel mode is not allowed. \n Specify two travel modes in the list")
-                            break
+                            raise AccessVizError("WARNING: You have specified just one travel mode. \n One travel mode is not allowed. \n Specify two travel modes in the list")
+#                            break
                    
                       
                     else:
