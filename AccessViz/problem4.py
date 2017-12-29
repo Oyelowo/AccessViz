@@ -28,9 +28,9 @@ Created on Thu Dec 28 17:54:06 2017
 from bokeh.palettes import YlOrRd6 as palette
 
 from bokeh.plotting import figure, save
-from bokeh.io import show
-from bokeh.layouts import column, row
-from bokeh.models import Div
+#from bokeh.io import show
+#from bokeh.layouts import column, row
+#from bokeh.models import Div
 from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, GeoJSONDataSource
 
 from bokeh.palettes import RdYlGn10 as palette5
@@ -257,11 +257,11 @@ class visual_comp:
                                 list_of_titles = ["walk_t: Travel time in minutes from origin to destination by walking",
                                                   "walk_d: Distance in meters of the walking route",
                                                 "pt_r_tt: Travel time in minutes from origin to destination by public transportation in rush hour traffic(including waiting time at home)", 
-                                                "pt_r_t:	 Travel time in minutes from origin to destination by public transportation in rush hour traffic(excluding waiting time at home)",
-                                                "pt_r_d:	 Distance in meters of the public transportation route in rush hour traffic",
-                                                "pt_m_tt: Travel time in minutes from origin to destination by public transportation in midday traffic(including waiting time at home)",
-                                                "pt_m_t:	 Travel time in minutes from origin to destination by public transportation in midday traffic(excluding waiting time at home)",
-                                                "pt_m_d:	 Distance in meters of the public transportation route in midday traffic",
+                                                "pt_r_t: Travel time in minutes from origin to destination by public transportation in rush hour traffic(excluding waiting time at home)",
+                                                "pt_r_d: Distance in meters of the public transportation route in rush hour traffic",
+                                                "pt_m_tt: Travel time in minutes to destination by public transportation in midday traffic(including waiting time at home)",
+                                                "pt_m_t: Travel time in minutes from origin to destination by public transportation in midday traffic(excluding waiting time at home)",
+                                                "pt_m_d: Distance in meters of the public transportation route in midday traffic",
                                                 "car_r_t: Travel time in minutes from origin to destination by private car in rush hour traffic",
                                                 "car_r_d: Distance in meters of the private car route in rush hour traffic",
                                                 "car_m_t: Travel time in minutes from origin to destination by private car in midday traffic",
@@ -302,16 +302,16 @@ class visual_comp:
                                 if map_type=='interactive':
                                 
                                     
-                                    p = figure(title=title_matrix, tools=TOOLS,
-                                                 plot_width=800, plot_height=650, active_scroll = "wheel_zoom" )
+                                    p = figure(title=title_matrix[len(tt_col)+1:], tools=TOOLS,
+                                                 plot_width=850, plot_height=650, active_scroll = "wheel_zoom" )
                                  
                                     
-                                    p.title.text=title_matrix
+                                    #p.title.text=title_matrix
                                     p.title.text_color = "blue"
                                     p.title.text_font = "times"
                                     p.title.text_font_style = "bold"
                                     p.title.text_font_size='12px'
-                                    p.title.offset=-100.0
+                                    p.title.offset=-50.0
                          #                    This can be used if you want a more generalised title
                         #                    differentiating just travel times and distances and not the meanas.
                         #                    if tt_col[-1]== 't':
