@@ -138,33 +138,35 @@ class visual_comp:
                                 print('\n')
                             else:
                                 merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
+                                
                                 #check if list is empty.
                                 if not compare_mod:
-                                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
-                                
-            
-                                
+                                  merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+                            
                                 else:
                                     mode1=compare_mod[0]; mode2=compare_mod[1]
                                     tt_col=mode1+'_vs_' + mode2
-                                    #print(merged_metro)
-                                    #Calculate the x and y coordinates of the grid.
-                                    merged_metro['x'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
-                        
-                                    merged_metro['y'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
                                     
                                     #NOTE: I CHOSE TO DEAL WITH NODATA BY EXCLUDING THEM.
                                     #exclude the nodatas(-1) from the two specified modes
                                     merged_metro= merged_metro.loc[merged_metro[ mode1]!=-1]
                                     merged_metro= merged_metro.loc[merged_metro[ mode2]!=-1]
                                     
+                                    merged_metro[tt_col] = merged_metro[mode1] - merged_metro[mode2]
+                                    
+                                    #print(merged_metro)
+                                   
                                     #combine the columns
                                     
                                     
-                                    merged_metro[tt_col] = merged_metro[mode1] - merged_metro[mode2]
-                                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(tt_col) + ".shp")
+                                    merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + tt_col + "_" +str(element) + ".shp")
                                 
                                     if visualisation==True:
+                                         #Calculate the x and y coordinates of the grid.
+                                        merged_metro['x'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+                            
+                                        merged_metro['y'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+                                    
                                    
                                         if classification =='pysal_class':
                                             if class_type == "Natural_Breaks":
@@ -445,17 +447,26 @@ class visual_comp:
                                             plt.savefig(outfp, dpi=300)
                             
                                         
-                            #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
-                            absentinput= [i for i in userinput if i not in m_list]
-                            
-                            #check if all of the imputed values does not exist
-                            if len(absentinput)==len(userinput):
-                                print("all the inputs do not exist")
-                                
-                                #check for those that are not included in the matrices
-                            elif any(absentinput) not in m_list:
-                                #warn that they do not exist
-                                print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
-                                #check how many of them are not in the matrices
-                                print(len(absentinput), "of the inputs are not included in the matrices")    
-                                print("\n")
+            #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
+            absentinput= [i for i in userinput if i not in m_list]
+            
+            #check if all of the imputed values does not exist
+            if len(absentinput)==len(userinput):
+                print("all the inputs do not exist")
+                
+                #check for those that are not included in the matrices
+            elif any(absentinput) not in m_list:
+                #warn that they do not exist
+                print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
+                #check how many of them are not in the matrices
+                print(len(absentinput), "of the inputs are not included in the matrices")    
+                print("\n")
+                                            
+            merged_files=[i for i in userinput if i in m_list]
+            if not compare_mod:
+                if len(userinput)==1:
+                    
+                    print("NOTE: You have not specified the travel modes to compare, hence, the merged shapefile",str(merged_files).strip("[]"), "alone was produced")
+                elif len(userinput)>1:
+                    print("NOTE: You have not specified the travel modes to compare, hence, the merged shapefiles- {0} -alone were produced".format(str(merged_files).strip("[]")))
+      
