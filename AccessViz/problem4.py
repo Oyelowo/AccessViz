@@ -112,11 +112,19 @@ class visual_comp:
                         
                     elif len(compare_mod)> 2:
                 #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
-                            print("WARNING: More than two travel modes are not allowed")
+                            print("WARNING: More than two travel modes are not allowed. Specify only two similar travel modes(i.e either distance or time but not both at thesame time)")
+                            break
+                    elif len(compare_mod)==2:
+                        if compare_mod[0]==compare_mod[1]:
+                            print("WARNING: You are comparing the same travel mode\n")
+                            break
+                        elif compare_mod[0][-1] != compare_mod[1][-1]:
+                            print("WARNING!:You cannot compare Travel Distance with Travel Time!!!\n")
                             break
                     elif len(compare_mod)==1:
                             print("WARNING: You have specified just one travel mode. \n One travel mode is not allowed. \n Specify two travel modes in the list")
                             break
+                   
                       
                     else:
                         #This is done to handle matrices with nodata at all. e.g: matrix"6016696"
@@ -128,12 +136,7 @@ class visual_comp:
                             #check if list is empty.
                             if not compare_mod:
                                 merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
-                            elif compare_mod[0]==compare_mod[1]:
-                                 print("WARNING: You are comparing the same travel mode\n")
-            
-                            elif compare_mod[0][-1] != compare_mod[0][-1]:
-                                print("WARNING!:You cannot compare Travel Distance with Travel Time!!!\n")
-                   
+                            
         
                             
                             else:
