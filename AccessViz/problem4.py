@@ -67,14 +67,7 @@ class visual_comp:
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
             lower_limit=5, upper_limit=200, step=5, label_upper_limit=60):
-        
-        if len(compare_mod)> 2:
-#userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
-           print("WARNING: More than two travel modes are not allowed")
-            
-        
-       
-        else:
+
             
             namelist=data_zip.namelist()
             m_list=[]
@@ -85,10 +78,10 @@ class visual_comp:
                 #now, check if the file is in not namelist of all the files in the ziped folder.
                 #if it is not, give the warning
                 if element_file not in namelist:
-                    #print("WARNING: The specified matrix {0} is not available".format(element))
+                    print("WARNING: The specified matrix {0} is not available".format(element))
                     print("\n")
                 else:
-                    #print("Matrix {0} is available".format(element))
+                    print("Matrix {0} is available".format(element))
                     m_list.append(element)
                                         #check for the progress
                     print("Processing file travel_times_to_{0}.txt.. Progress: {1}/{2}".format(element,len([i for i in range(len(m_list))]), len(userinput)))
@@ -107,8 +100,20 @@ class visual_comp:
                     tt_matrices= pd.read_csv(element_file, sep=";")
                 
                     if any(x in [i for i in tt_matrices.columns] for x in compare_mod)==False:
-                        print(compare_mod, ' not available')
-                        print("Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
+                                       
+                        if len(compare_mod)==1:
+                            print("The travel mode", str(compare_mod).strip('[]'), 'is not available')
+                            print("Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
+                            break
+                        else:
+                            print("The travel modes:", str(compare_mod).strip('[]'), ', are not available')
+                            print("Accepted travel modes include:", str([i for i in tt_matrices.columns][2:]).strip('[]'))
+                            break
+                        
+                    elif len(compare_mod)> 2:
+                #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
+                            print("WARNING: More than two travel modes are not allowed")
+                            break
                     elif len(compare_mod)==1:
                             print("WARNING: You have specified just one travel mode. \n One travel mode is not allowed. \n Specify two travel modes in the list")
                             break
