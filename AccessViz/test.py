@@ -58,6 +58,12 @@ visual.vis(data_zip, userinput=[5991,342,6016696, 6015141, 5991603, 5991515, 578
 mtp['geometry'] = mtp['geometry'].to_crs(epsg=3067)
 mtp.crs
 
-visual_comp.vis_compare(data_zip, compare_mod=["pt_r_tt", "car_r_t"], map_type='static',visualisation=True, userinput=[5991,342,6016696, 6015141, 5991603, 5991515, 5789455,9485399, 5789456, 4,2545,54646, 5802791, 8897,2524,245],  filepath=r"C:\Users\oyeda\Desktop\AUTOGIS\FINAL_ASSIGNMENT\visualise", grid_shp=mtp, destination_style='circle',  classification='pysal_class',n_classes=8, class_type="Quantiles")   
+visual_comp.vis_compare(data_zip, compare_mod=["car_r_d", "pt_r_d"],
+        map_type='interactive',visualisation=True, userinput=[5991,342,6016696, 
+        6015141, 5991603, 5991515, 5789455,9485399, 5789456, 4,2545,54646, 5802791, 
+        8897,2524,245],  filepath=r"C:\Users\oyeda\Desktop\AUTOGIS\FINAL_ASSIGNMENT\visualise", 
+        grid_shp=mtp, destination_style='circle',  classification='User_Defined',
+        n_classes=10, class_type="Quantiles", lower_limit=-50, upper_limit= 1000, step=700,
+        label_upper_limit=200)   
 
 

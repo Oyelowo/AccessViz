@@ -172,7 +172,7 @@ class visual:
                          #Next, we want to classify the travel times with 5 minute intervals until 200 minutes.
         
                         #Let’s create a list of values where minumum value is 5, maximum value is 200 and step is 5.
-                        breaks = [x for x in range(0, 200, 5)]
+                        breaks = [x for x in range(lower_limit, upper_limit, step)]
                         #Now we can create a pysal User_Defined classifier and classify our travel time values.
                     
                         classifier = ps.User_Defined.make(bins=breaks)
