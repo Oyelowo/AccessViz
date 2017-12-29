@@ -31,6 +31,8 @@ from bokeh.plotting import figure, save
 #from bokeh.io import show
 #from bokeh.layouts import column, row
 #from bokeh.models import Div
+from bokeh.io import output_file, show
+from bokeh.models import Title
 from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, GeoJSONDataSource
 
 from bokeh.palettes import RdYlGn10 as palette5
@@ -45,6 +47,8 @@ import pysal as ps
 import numpy as np
 import pandas as pd
 import textwrap
+from get_geom import get_geom
+
 
 #from bokeh.core.properties import values
 
@@ -60,7 +64,7 @@ from bokeh.models.mappers import CategoricalColorMapper, ContinuousColorMapper,L
 from bokeh.palettes import RdYlGn11 as palette2
 from bokeh.palettes import BrBG10 as palette3
 from bokeh.palettes import RdYlGn9 as palette4
-from get_geom import get_geom
+
 
 class AccessVizError(Exception):
     """Base class for exceptions in this AccessViz module."""
@@ -322,16 +326,20 @@ class visual_comp:
                                 if map_type=='interactive':
                                 
                                     
-                                    p = figure(title=title_matrix[len(tt_col)+1:], tools=TOOLS,
+                                    p = figure(title=tt_col, tools=TOOLS,
                                                  plot_width=850, plot_height=650, active_scroll = "wheel_zoom" )
                                  
                                     
                                     #p.title.text=title_matrix
                                     p.title.text_color = "blue"
                                     p.title.text_font = "times"
-                                    p.title.text_font_style = "bold"
-                                    p.title.text_font_size='12px'
-                                    p.title.offset=-50.0
+                                    p.title.text_font_style = "italic"
+                                    p.title.text_font_size='20px'
+                                    p.title.offset=-5.0
+                                    
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][95:], text_font_size="11pt", text_font_style="bold"), 'above')    #sub
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][:95], text_font_size="11pt",text_font_style="bold"),'above')       #main
+                                   
                          #                    This can be used if you want a more generalised title
                         #                    differentiating just travel times and distances and not the meanas.
                         #                    if tt_col[-1]== 't':
@@ -419,7 +427,7 @@ class visual_comp:
                                     dest_grid.loc[1,"geometry"]=dest_grid_loc
                                     #r_s["geometry"]=r_s["geometry"].to_crs(crs=gridCRS)
                                     
-                                    dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=3)
+                                    dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=2)
                                     
                    
                                     #plt.legend(["roads", "metro line","Rautatientori"])
