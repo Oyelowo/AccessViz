@@ -266,8 +266,8 @@ class visual_comp:
                                 TOOLS = "pan,wheel_zoom,box_zoom,reset,save"
                                 
                                 # Flip the colors in color palette
-                                palette4.reverse()
-                                color_mapper = LogColorMapper(palette=palette4)
+                                palette2.reverse()
+                                color_mapper = LogColorMapper(palette=palette2)
                                 #color_mapper = ContinuousColorMapper(palette=palette4)
                                 
                                 
