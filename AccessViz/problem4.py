@@ -74,7 +74,7 @@ class visual_comp:
     def vis_compare(data_zip,userinput, filepath, grid_shp, compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',        
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
-            lower_limit=5, upper_limit=200, step=5, label_upper_limit=60):
+            class_lower_limit="", class_upper_limit="", class_step="", label_lower_limit="", label_upper_limit="", label_step=""):
 
             
             namelist=data_zip.namelist()
@@ -214,7 +214,7 @@ class visual_comp:
                                      #Next, we want to classify the travel times with 5 minute intervals until 200 minutes.
                     
                                     #Let’s create a list of values where minumum value is 5, maximum value is 200 and step is 5.
-                                    breaks = [x for x in range(lower_limit, upper_limit, step)]
+                                    breaks = [x for x in range(class_lower_limit, class_upper_limit, class_step)]
                                     #Now we can create a pysal User_Defined classifier and classify our travel time values.
                                 
                                     classifier = ps.User_Defined.make(bins=breaks)
@@ -232,15 +232,12 @@ class visual_comp:
                                     merged_metro = merged_metro.join(mode_classif)
                                     #data = data.join(walk_classif)
                                     #Create names for the legend (until 60 minutes). The following will produce: ["0-5", "5-10", "10-15", ... , "60 <"].
-            #                        upper_limit = 60
-            #                       
-            #                        step = 10
-            #                        lower_limit=0
-                                    names = ["%s-%s" % (x-lower_limit, x) for x in range(lower_limit, upper_limit, step)]
+            #                        
+                                    names = ["%s-%s" % (x-label_step, x) for x in range(label_lower_limit, label_upper_limit, label_step)]
                                     #         ["{0}kk{1}".format(x-5,x) for x in range(5, 200, 5)]   #alternative
                                     
                                     #Add legend label for over 60.
-                                    names.append("%s<" % upper_limit)
+                                    names.append("%s<" % label_upper_limit)
                                     #Assign legend names for the classes.
                                     #data['label_wt'] = None
                                     
@@ -337,8 +334,9 @@ class visual_comp:
                                     p.title.text_font_size='20px'
                                     p.title.offset=-5.0
                                     
-                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][95:], text_font_size="11pt", text_font_style="bold"), 'above')    #sub
-                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][:95], text_font_size="11pt",text_font_style="bold"),'above')       #main
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][210:], text_font_size="11pt", text_font_style="bold"), 'above')   #sub
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][102:210], text_font_size="11pt", text_font_style="bold"), 'above')    #sub
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][:102], text_font_size="11pt",text_font_style="bold"),'above')       #main
                                    
                          #                    This can be used if you want a more generalised title
                         #                    differentiating just travel times and distances and not the meanas.
@@ -375,13 +373,13 @@ class visual_comp:
                                     #because, it  is a grid, the location of each cell has about s x and 
                                     #y coordinates, hence, after finding the x for each grid, select 
                                     #one of the x and y coordinates(the third, which is the centre of each grid) from the list.
-                                    dest_grid_x = (df.loc[df["YKR_ID"]==element, 'x'].values[0])[2]
-                                    dest_grid_y =  (df.loc[df["YKR_ID"]==element, 'y'].values[0])[2]
+                                    #dest_grid_x = (df.loc[df["YKR_ID"]==element, 'x'].values[0])[2]
+                                    #dest_grid_y =  (df.loc[df["YKR_ID"]==element, 'y'].values[0])[2]
                                     
                                     #Alternative to getting the centre of a grid:
-                    #                grid_centroid=merged_metro.loc[merged_metro['YKR_ID']==element, 'geometry'].values[0].centroid
-                    #                dest_grid_x=grid_centroid.x 
-                    #                dest_grid_y= grid_centroid.y
+                                    grid_centroid=merged_metro.loc[merged_metro['YKR_ID']==element, 'geometry'].values[0].centroid
+                                    dest_grid_x=grid_centroid.x 
+                                    dest_grid_y= grid_centroid.y
                                     
                                     if destination_style=='circle':
                                     # Add two separate hover tools for the data
