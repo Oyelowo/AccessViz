@@ -151,21 +151,31 @@ class visual_comp:
                             mode1=compare_mod[0]; mode2=compare_mod[1]
                             tt_col=mode1+'_vs_' + mode2
                             
-                            #NOTE: I CHOSE TO DEAL WITH NODATA BY EXCLUDING THEM.
-                            #exclude the nodatas(-1) from the two specified modes
-                            merged_metro= merged_metro.loc[merged_metro[ mode1]!=-1]
-                            merged_metro= merged_metro.loc[merged_metro[ mode2]!=-1]
+                            #Next I will calculate the difference but be mindful of the empty grids.
+                            #when either or both of the modes is/are empty, the resultant difference
+                            #should be nodata(i.e -1)
+                            #create an empty column to imput the mode difference
+                            merged_metro[tt_col]=""
+                            mode1_vs_mode2=[]
+                            for idx, rows in merged_metro.iterrows():
+                                if rows[mode1]==-1 or rows[mode2]==-1:
+                                    difference=-1
+                                    mode1_vs_mode2.append(difference)
+                                else:
+                                    difference= rows[mode1]-rows[mode2]
+                                    mode1_vs_mode2.append(difference)
+                            merged_metro[tt_col]=mode1_vs_mode2
+             
                             
-                            merged_metro[tt_col] = merged_metro[mode1] - merged_metro[mode2]
-                            
-                            #print(merged_metro)
-                           
-                            #combine the columns
-                            
-                            
+                            #now, export the result
                             merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + tt_col + "_" +str(element) + ".shp")
-                        
+                            
+                            
                             if visualisation==True:
+                                #However, for the visualisation, there is need to exclude the nodata grids with -1
+                                merged_metro= merged_metro.loc[merged_metro[ tt_col]!=-1]
+
+                            
                                  #Calculate the x and y coordinates of the grid.
                                 merged_metro['x'] = merged_metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
                     
@@ -334,8 +344,8 @@ class visual_comp:
                                     p.title.text_font_size='20px'
                                     p.title.offset=-5.0
                                     
-                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][210:], text_font_size="11pt", text_font_style="bold"), 'above')   #sub
-                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][102:210], text_font_size="11pt", text_font_style="bold"), 'above')    #sub
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][211:], text_font_size="11pt", text_font_style="bold"), 'above')   #sub
+                                    p.add_layout(Title(text=title_matrix[len(tt_col)+1:][102:211], text_font_size="11pt", text_font_style="bold"), 'above')    #sub
                                     p.add_layout(Title(text=title_matrix[len(tt_col)+1:][:102], text_font_size="11pt",text_font_style="bold"),'above')       #main
                                    
                          #                    This can be used if you want a more generalised title
@@ -365,7 +375,7 @@ class visual_comp:
                                     ghover.tooltips=[("YKR-ID", "@from_id"),
                                                      (mode1, "@"+ mode1),
                                                      (mode2, "@"+ mode2),
-                                                    (tt_col, "@" + tt_col)]  
+                                                    (mode1 +" minus "+ mode2, "@" + tt_col)]  
                                     p.add_tools(ghover)
                                     
                                       # Insert a circle on top of the location(coords in EurefFIN-TM35FIN)
