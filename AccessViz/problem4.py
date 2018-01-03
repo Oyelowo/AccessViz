@@ -165,6 +165,20 @@ class visual_comp:
                                     difference= rows[mode1]-rows[mode2]
                                     mode1_vs_mode2.append(difference)
                             merged_metro[tt_col]=mode1_vs_mode2
+                            
+# =============================================================================
+#                            alternative
+#                             mode1_vs_mode2=[]
+#                             for i in range(len(data)):
+#                                 print(i)
+#                                 if data.loc[i, "pt_r_tt"]!=-1 or data.loc[i,"car_r_t"]!=-1:
+#                                     dat= data["pt_r_tt"] - data["car_r_t"]
+#                                     mode1_vs_mode2.append(dat)
+#                                 elif data.loc[i, "pt_r_tt"]==-1 or data.loc[i,"car_r_t"]==-1:
+#                                     dat=-1
+#                                     mode1_vs_mode2.append(dat)
+#                             data["pt_diff_car_tt"] = mode1_vs_mode2
+# =============================================================================
              
                             
                             #now, export the result

@@ -74,7 +74,7 @@ visual_comp.vis_compare(data_zip, compare_mod=["pt_r_tt","pt_r_t"],
         n_classes=10, class_type="Quantiles", class_lower_limit=-15, class_upper_limit=200, 
         class_step=5, label_lower_limit=-10, label_upper_limit=30, label_step=5)   
 
-visual_comp.vis_compare(data_zip, compare_mod=["pt_r_tt","pt_r_t"],
+visual_comp.vis_compare(data_zip, compare_mod=["pt_r_tt","car_r_t"],
         map_type='interactive',visualisation=True, userinput=[5991,342,6016696, 
         6015141, 5991603, 5991515, 5789455,9485399, 5789456, 4,2545,54646, 5802791, 
         8897,2524,245],  filepath=r"C:\Users\oyeda\Desktop\AUTOGIS\FINAL_ASSIGNMENT\visualise", 
