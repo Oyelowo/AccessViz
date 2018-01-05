@@ -70,7 +70,7 @@ class AccessVizError(Exception):
     pass
 
 class visual_comp:
-    def vis_compare(data_zip,userinput, filepath, grid_shp, roads='',train='', metro='',compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',
+    def vis_compare(data_zip,userinput, filepath, grid_shp, roads=None,train=None, metro=None,compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',
                     roads_color='grey', metro_color='red', train_color='blue',
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
@@ -79,14 +79,65 @@ class visual_comp:
 #
             from fiona.crs import from_epsg
             grid_shp=grid_shp.to_crs(from_epsg(3067))
-            roads=roads.to_crs(from_epsg(3067))
-            train=train.to_crs(from_epsg(3067))
-            metro=metro.to_crs(from_epsg(3067))
-#            grid_shp['geometry'] = grid_shp['geometry'].to_crs(epsg=3067)
-#            
-#            roads['geometry'] = roads['geometry'].to_crs(epsg=3067)
-#
-#            metro['geometry'] = metro['geometry'].to_crs(epsg=3067)
+            
+            if roads is None:
+                print('You have not included the roads route')
+            else:
+                roads=roads.to_crs(from_epsg(3067))
+                
+                #Calculate the x and y coordinates of the roads (these contain MultiLineStrings).
+                roads['x'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+                                
+                roads['y'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+                
+                 # Include only coordinates from roads (exclude 'geometry' column)
+                rdf = roads[['x', 'y']]
+                #this two rows had nan values which prevented me from saving the plot. I got the error:
+                #ValueError: Out of range float values are not JSON compliant.
+                #therefore, I had to remove the two rows
+                rdf.drop(39, inplace=True)
+                rdf.drop(158, inplace=True)
+                
+                rdfsource = ColumnDataSource(data=rdf)
+             
+            if train is None:
+                print('You have not included the train route')
+            else:
+                train=train.to_crs(from_epsg(3067))
+                
+                train['x'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+                
+                train['y'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+               
+                
+                tdf = train[['x','y']]
+                tdfsource = ColumnDataSource(data=tdf)
+                
+            if metro is None:
+                print('You have not included the metro route')
+            else:
+                metro=metro.to_crs(from_epsg(3067))
+                
+                  #Calculate the x and y coordinates of metro.
+                metro['x'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+                
+                metro['y'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+                              
+                # Include only coordinates from metro (exclude 'geometry' column)
+                mdf = metro[['x','y']]
+                mdfsource = ColumnDataSource(data=mdf)
+                                
+                                   
+
+
+
+
+
+
+
+
+
+
             namelist=data_zip.namelist()
             m_list=[]
             #iterate over the userinput, to get all its element/values
@@ -299,38 +350,7 @@ class visual_comp:
                                 
                                 
                                 
-                              
-                                #Calculate the x and y coordinates of the roads (these contain MultiLineStrings).
-                                roads['x'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
-                                
-                                roads['y'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
-                                #Calculate the x and y coordinates of metro.
-                                metro['x'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
-                                
-                                metro['y'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
-                                
-                                train['x'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
-                                
-                                train['y'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
- 
-                                
-                                # Include only coordinates from roads (exclude 'geometry' column)
-                                rdf = roads[['x', 'y']]
-                                #this two rows had nan values which prevented me from saving the plot. I got the error:
-                                #ValueError: Out of range float values are not JSON compliant.
-                                #therefore, I had to remove the two rows
-                                rdf.drop(39, inplace=True)
-                                rdf.drop(158, inplace=True)
-                                
-                                rdfsource = ColumnDataSource(data=rdf)
-                                
-                                # Include only coordinates from metro (exclude 'geometry' column)
-                                mdf = metro[['x','y']]
-                                mdfsource = ColumnDataSource(data=mdf)
-                                
-                                
-                                tdf = train[['x','y']]
-                                tdfsource = ColumnDataSource(data=tdf)
+                            
                                 
                                 
                                 
@@ -427,15 +447,17 @@ class visual_comp:
                                     grid = p.patches('x', 'y', source=dfsource, name="grid",
                                              fill_color={'field': tt_col+"_ud", 'transform': color_mapper},
                                              fill_alpha=1.0, line_color="black", line_width=0.03, legend='label_' + tt_col)
-                                    # Add roads
-                                    r = p.multi_line('x', 'y', source=rdfsource, color=roads_color, legend="roads")
-                                    
-                                    # Add metro
-                                    m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
-                                    #other line dash option: 'solid' ,'dashed','dotted','dotdash','dashdot'
+                                    if roads is not None:
+                                        # Add roads
+                                        r = p.multi_line('x', 'y', source=rdfsource, color=roads_color, legend="roads")
+                                    if metro is not None:
+                                        # Add metro
+                                        m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
+                                        #other line dash option: 'solid' ,'dashed','dotted','dotdash','dashdot'
 
-                                    # Add metro
-                                    tr = p.multi_line('x', 'y', source=tdfsource,line_cap='butt', line_dash='dashdot', color=train_color, legend="train")
+                                    if train is not None:
+                                        # Add metro
+                                        tr = p.multi_line('x', 'y', source=tdfsource,line_cap='butt', line_width=2, line_dash='dashdot', color=train_color, legend="train")
 
                                     
                                     # Modify legend location
