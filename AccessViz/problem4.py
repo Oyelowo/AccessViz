@@ -431,10 +431,11 @@ class visual_comp:
                                     r = p.multi_line('x', 'y', source=rdfsource, color=roads_color, legend="roads")
                                     
                                     # Add metro
-                                    m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, legend="metro")
+                                    m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
+                                    #other line dash option: 'solid' ,'dashed','dotted','dotdash','dashdot'
 
                                     # Add metro
-                                    tr = p.multi_line('x', 'y', source=tdfsource, color=train_color, legend="train")
+                                    tr = p.multi_line('x', 'y', source=tdfsource,line_cap='butt', line_dash='dashdot', color=train_color, legend="train")
 
                                     
                                     # Modify legend location
