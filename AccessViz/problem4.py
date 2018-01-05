@@ -81,12 +81,12 @@ class visual_comp:
             grid_shp=grid_shp.to_crs(from_epsg(3067))
             roads=roads.to_crs(from_epsg(3067))
             train=train.to_crs(from_epsg(3067))
-#            metro=metro.to_crs(from_epsg(3067))
+            metro=metro.to_crs(from_epsg(3067))
 #            grid_shp['geometry'] = grid_shp['geometry'].to_crs(epsg=3067)
 #            
 #            roads['geometry'] = roads['geometry'].to_crs(epsg=3067)
 #
-            metro['geometry'] = metro['geometry'].to_crs(epsg=3067)
+#            metro['geometry'] = metro['geometry'].to_crs(epsg=3067)
             namelist=data_zip.namelist()
             m_list=[]
             #iterate over the userinput, to get all its element/values
