@@ -558,7 +558,7 @@ class visual_comp:
                                     dest_grid.loc[1,"geometry"]=dest_grid_loc
                                     #r_s["geometry"]=r_s["geometry"].to_crs(crs=gridCRS)
                                     
-                                    dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=2)
+                                    dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=1.5)
                                     
                    
                                     #plt.legend(["roads", "metro line","Rautatientori"])
