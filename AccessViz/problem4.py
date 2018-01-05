@@ -354,13 +354,14 @@ class visual_comp:
                                 #and add HoverTools for Destination Point and the grid values (travel times).
                                 # Select only necessary columns for our plotting to keep the amount of data minumum
                                 #df = data[['x', 'y', 'walk_t','walk_t_ud', 'car_r_t','car_r_t_ud', 'from_id', 'label_wt', "label_car"]]
-                                df = merged_metro[['x', 'y',"YKR_ID",mode1,mode2, tt_col,tt_col+"_ud","from_id" ,'label_' + tt_col]]
+                                df = merged_metro[['x','y',"YKR_ID",mode1,mode2, tt_col,tt_col+"_ud","from_id" ,'label_' + tt_col]]
                                 dfsource = ColumnDataSource(data=df)
+#                                dfsource = GeoJSONDataSource(geojson=merged_metro.to_json())
                                 
-                                df_dest_id= df.loc[df['YKR_ID']==element]
+                                df_dest_id= merged_metro.loc[merged_metro['YKR_ID']==element]
                                 dfsource_dest_id = ColumnDataSource(data=df_dest_id)
-                                
-                                
+#                                dfsource_dest_id = GeoJSONDataSource(geojson=df_dest_id.to_json())
+                            
                                 
                             
                                 
@@ -470,12 +471,12 @@ class visual_comp:
                                         r = p.multi_line('xs', 'ys', source=rdfsource, color=roads_color, legend="roads")
                                     if metro is not None:
                                         # Add metro
-                                        m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
+                                        m = p.multi_line('xs', 'ys', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
                                         #other line dash option: 'solid' ,'dashed','dotted','dotdash','dashdot'
 
                                     if train is not None:
                                         # Add train
-                                        tr = p.multi_line('x', 'y', source=tdfsource,line_cap='butt', line_width=2, line_dash='dashdot', color=train_color, legend="train")
+                                        tr = p.multi_line('xs', 'ys', source=tdfsource,line_cap='butt', line_width=2, line_dash='dashdot', color=train_color, legend="train")
 
  
                                         
@@ -507,7 +508,7 @@ class visual_comp:
                                     
                                     if destination_style=='circle':
                                     # Add two separate hover tools for the data
-                                        circle = p.circle(x=[dest_grid_x], y=[dest_grid_y], name="point", size=7, color=destination_color)
+                                        circle = p.circle(x=[dest_grid_x], y=[dest_grid_y], name="point", size=7, color=destination_color, legend= 'Destination')
                                     
                                         phover = HoverTool(renderers=[circle])
                                         phover.tooltips=[("Destination Grid:", str(element))]

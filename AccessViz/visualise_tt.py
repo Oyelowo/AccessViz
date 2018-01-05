@@ -75,9 +75,9 @@ from bokeh.palettes import RdYlGn9 as palette4
 #         ''' some details he
 # =============================================================================
 class visual:
-    def vis(data_zip,userinput, tt_col, filepath, grid_shp, roads=None,train=None, 
+    def vis(data_zip,userinput, tt_col, filepath, grid_shp, sea=None, roads=None,train=None, 
             metro=None,compare_mod=[], visualisation=True,roads_color='grey', metro_color='red', 
-            train_color='blue',map_type='interactive', destination_style='grid',        
+            train_color='blue',map_type='interactive', destination_style='grid', destination_color='blue',       
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, 
             pct_classes=[1,10,50,90,99,100],
@@ -364,12 +364,12 @@ class visual:
                             r = p.multi_line('xs', 'ys', source=rdfsource, color=roads_color, legend="roads")
                         if metro is not None:
                             # Add metro
-                            m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
+                            m = p.multi_line('xs', 'ys', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
                             #other line dash option: 'solid' ,'dashed','dotted','dotdash','dashdot'
 
                         if train is not None:
                             # Add metro
-                            tr = p.multi_line('x', 'y', source=tdfsource,line_cap='butt', line_width=2, line_dash='dashdot', color=train_color, legend="train")
+                            tr = p.multi_line('xs', 'ys', source=tdfsource,line_cap='butt', line_width=2, line_dash='dashdot', color=train_color, legend="train")
 
                         
                         
@@ -397,14 +397,14 @@ class visual:
                         
                         if destination_style=='circle':
                         # Add two separate hover tools for the data
-                            circle = p.circle(x=[dest_grid_x], y=[dest_grid_y], name="point", size=6, color="blue")
+                            circle = p.circle(x=[dest_grid_x], y=[dest_grid_y], name="point", size=7, color=destination_color, legend= 'Destination')
                         
                             phover = HoverTool(renderers=[circle])
                             phover.tooltips=[("Destination Grid:", str(element))]
                             p.add_tools(phover)
                            
                         elif destination_style=='grid':
-                            grid_dest_id= p.patches('x', 'y', source=dfsource_dest_id, name='grid', color='blue')
+                            grid_dest_id= p.patches('x', 'y', source=dfsource_dest_id, name='grid', color=destination_color)
                         
                             ghover_dest_id = HoverTool(renderers=[grid_dest_id])
                             ghover_dest_id.tooltips=[("DESTINATION GRID", str(element))] 
@@ -425,15 +425,15 @@ class visual:
                         if roads is not None:
                              # Add roads on top of the grid
                             # (use ax parameter to define the map on top of which the second items are plotted)
-                            rp=roads.plot(ax=my_map, color=roads_color, legend=True, linewidth=1.0)
+                            roads.plot(ax=my_map, color=roads_color, legend=True, linewidth=1.0)
                        
                         if metro is not None:
                             # Add metro on top of the previous map
-                            mp=metro.plot(ax=my_map, color=metro_color, legend=True, linewidth=1.2)
+                            metro.plot(ax=my_map, color=metro_color, legend=True, linewidth=1.2)
                         
                         if train is not None:
                             # Add metro on top of the previous map
-                            tp=train.plot(ax=my_map, color=train_color, legend=True, linestyle='dashdot', linewidth=1.2)
+                            train.plot(ax=my_map, color=train_color, legend=True, linestyle='dashdot', linewidth=1.2)
                                 
                         
                         ## Insert a circle on top of the Central Railway Station (coords in EurefFIN-TM35FIN)
@@ -466,7 +466,7 @@ class visual:
                         mapBox = my_map.get_position()
                         my_map.set_position([mapBox.x0, mapBox.y0, mapBox.width*0.6, mapBox.height*0.9])
                         my_map.legend(loc=2, prop={'size': 3})  
-                        plt.gca().add_artist(plt.legend(["roads", "metro line",'train']))
+#                        plt.gca().add_artist(plt.legend(["roads", "metro line",'train']))
                         
                         
                         #plt.show()
