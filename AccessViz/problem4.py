@@ -70,16 +70,22 @@ class AccessVizError(Exception):
     pass
 
 class visual_comp:
-    def vis_compare(data_zip,userinput, filepath, grid_shp, roads, metro,compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',        
+    def vis_compare(data_zip,userinput, filepath, grid_shp, roads='',train='', metro='',compare_mod=[], visualisation=True, map_type='interactive', destination_style='grid',
+                    roads_color='grey', metro_color='red', train_color='blue',
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
             class_lower_limit="", class_upper_limit="", class_step="", label_lower_limit="", label_upper_limit="", label_step=""):
 
-
-            grid_shp['geometry'] = grid_shp['geometry'].to_crs(epsg=3067)
-            
-            roads['geometry'] = roads['geometry'].to_crs(epsg=3067)
-
+#
+            from fiona.crs import from_epsg
+            grid_shp=grid_shp.to_crs(from_epsg(3067))
+            roads=roads.to_crs(from_epsg(3067))
+            train=train.to_crs(from_epsg(3067))
+#            metro=metro.to_crs(from_epsg(3067))
+#            grid_shp['geometry'] = grid_shp['geometry'].to_crs(epsg=3067)
+#            
+#            roads['geometry'] = roads['geometry'].to_crs(epsg=3067)
+#
             metro['geometry'] = metro['geometry'].to_crs(epsg=3067)
             namelist=data_zip.namelist()
             m_list=[]
@@ -303,6 +309,11 @@ class visual_comp:
                                 
                                 metro['y'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
                                 
+                                train['x'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+                                
+                                train['y'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+ 
+                                
                                 # Include only coordinates from roads (exclude 'geometry' column)
                                 rdf = roads[['x', 'y']]
                                 #this two rows had nan values which prevented me from saving the plot. I got the error:
@@ -316,6 +327,10 @@ class visual_comp:
                                 # Include only coordinates from metro (exclude 'geometry' column)
                                 mdf = metro[['x','y']]
                                 mdfsource = ColumnDataSource(data=mdf)
+                                
+                                
+                                tdf = train[['x','y']]
+                                tdfsource = ColumnDataSource(data=tdf)
                                 
                                 
                                 
@@ -413,10 +428,13 @@ class visual_comp:
                                              fill_color={'field': tt_col+"_ud", 'transform': color_mapper},
                                              fill_alpha=1.0, line_color="black", line_width=0.03, legend='label_' + tt_col)
                                     # Add roads
-                                    r = p.multi_line('x', 'y', source=rdfsource, color="grey", legend="roads")
+                                    r = p.multi_line('x', 'y', source=rdfsource, color=roads_color, legend="roads")
                                     
                                     # Add metro
-                                    m = p.multi_line('x', 'y', source=mdfsource, color="yellow", legend="metro")
+                                    m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, legend="metro")
+
+                                    # Add metro
+                                    tr = p.multi_line('x', 'y', source=tdfsource, color=train_color, legend="train")
 
                                     
                                     # Modify legend location
