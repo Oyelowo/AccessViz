@@ -97,48 +97,58 @@ class visual:
             print('You have not included the roads route')
         else:
             roads=roads.to_crs(from_epsg(3067))
+            rdfsource = GeoJSONDataSource(geojson=roads.to_json())
             
-            #Calculate the x and y coordinates of the roads (these contain MultiLineStrings).
-            roads['x'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
-                            
-            roads['y'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
-            
-             # Include only coordinates from roads (exclude 'geometry' column)
-            rdf = roads[['x', 'y']]
-            #this two rows had nan values which prevented me from saving the plot. I got the error:
-            #ValueError: Out of range float values are not JSON compliant.
-            #therefore, I had to remove the two rows
-            rdf.drop(39, inplace=True)
-            rdf.drop(158, inplace=True)
-            
-            rdfsource = ColumnDataSource(data=rdf)
+#            #Calculate the x and y coordinates of the roads (these contain MultiLineStrings).
+#            roads['x'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+#                            
+#            roads['y'] = roads.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+#            
+#             # Include only coordinates from roads (exclude 'geometry' column)
+#            rdf = roads[['x', 'y']]
+#            #this two rows had nan values which prevented me from saving the plot. I got the error:
+#            #ValueError: Out of range float values are not JSON compliant.
+#            #therefore, I had to remove the two rows
+#            rdf.drop(39, inplace=True)
+#            rdf.drop(158, inplace=True)
+#            
+#            rdfsource = ColumnDataSource(data=rdf)
          
         if train is None:
             print('You have not included the train route')
         else:
             train=train.to_crs(from_epsg(3067))
+            tdfsource = GeoJSONDataSource(geojson=train.to_json())
             
-            train['x'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
-            
-            train['y'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
-           
-            
-            tdf = train[['x','y']]
-            tdfsource = ColumnDataSource(data=tdf)
+#            train['x'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+#            
+#            train['y'] = train.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+#           
+#            
+#            tdf = train[['x','y']]
+#            tdfsource = ColumnDataSource(data=tdf)
             
         if metro is None:
             print('You have not included the metro route')
         else:
             metro=metro.to_crs(from_epsg(3067))
+            mdfsource = GeoJSONDataSource(geojson=metro.to_json())
             
-              #Calculate the x and y coordinates of metro.
-            metro['x'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+#              #Calculate the x and y coordinates of metro.
+#            metro['x'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="x", axis=1)
+#            
+#            metro['y'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
+#                          
+#            # Include only coordinates from metro (exclude 'geometry' column)
+#            mdf = metro[['x','y']]
+#            mdfsource = ColumnDataSource(data=mdf)
+        if sea is None:
+            print('You have not included the metro route')
+        else:
+   
+            sea=sea.to_crs(from_epsg(3067))
             
-            metro['y'] = metro.apply(get_geom.getCoords, geom_col="geometry", coord_type="y", axis=1)
-                          
-            # Include only coordinates from metro (exclude 'geometry' column)
-            mdf = metro[['x','y']]
-            mdfsource = ColumnDataSource(data=mdf)
+            sea_source = GeoJSONDataSource(geojson=sea.to_json())
                             
                    
         
@@ -339,6 +349,11 @@ class visual:
                         # Do not add grid line
                         p.grid.grid_line_color = None
                         
+                        if sea is not None:
+                            #add water
+                            s= p.patches('xs', 'ys', source=sea_source, color='#6baed6', legend='water')
+                                    
+                        
                         # Add polygon grid and a legend for it
                         grid = p.patches('x', 'y', source=dfsource, name="grid",
                                  fill_color={'field': tt_col+"_ud", 'transform': color_mapper},
@@ -346,7 +361,7 @@ class visual:
                         
                         if roads is not None:
                             # Add roads
-                            r = p.multi_line('x', 'y', source=rdfsource, color=roads_color, legend="roads")
+                            r = p.multi_line('xs', 'ys', source=rdfsource, color=roads_color, legend="roads")
                         if metro is not None:
                             # Add metro
                             m = p.multi_line('x', 'y', source=mdfsource, color=metro_color, line_dash='solid', legend="metro")
@@ -410,15 +425,15 @@ class visual:
                         if roads is not None:
                              # Add roads on top of the grid
                             # (use ax parameter to define the map on top of which the second items are plotted)
-                            roads.plot(ax=my_map, color=roads_color, legend=True, linewidth=1.0)
+                            rp=roads.plot(ax=my_map, color=roads_color, legend=True, linewidth=1.0)
                        
                         if metro is not None:
                             # Add metro on top of the previous map
-                            metro.plot(ax=my_map, color=metro_color, legend=True, linewidth=1.2)
+                            mp=metro.plot(ax=my_map, color=metro_color, legend=True, linewidth=1.2)
                         
                         if train is not None:
                             # Add metro on top of the previous map
-                            train.plot(ax=my_map, color=train_color, legend=True, linestyle='dashdot', linewidth=1.2)
+                            tp=train.plot(ax=my_map, color=train_color, legend=True, linestyle='dashdot', linewidth=1.2)
                                 
                         
                         ## Insert a circle on top of the Central Railway Station (coords in EurefFIN-TM35FIN)
@@ -435,7 +450,7 @@ class visual:
                         dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=3)
                         
        
-                        #plt.legend(["roads", "metro line","Rautatientori"])
+#                        plt.legend(["roads", "metro line",'train'])
                         #title_map=list_of_titles[tt_matrices.columns.get_loc(tt_col) - 2]
                         plt.title(title_matrix[:59] + '\n'+ title_matrix[59:], fontsize=8)
                         
@@ -450,7 +465,9 @@ class visual:
                         #resize the map to fit in thr legend.
                         mapBox = my_map.get_position()
                         my_map.set_position([mapBox.x0, mapBox.y0, mapBox.width*0.6, mapBox.height*0.9])
-                        my_map.legend(loc=2, prop={'size': 3})                
+                        my_map.legend(loc=2, prop={'size': 3})  
+                        plt.gca().add_artist(plt.legend(["roads", "metro line",'train']))
+                        
                         
                         #plt.show()
                         
