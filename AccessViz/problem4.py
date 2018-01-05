@@ -510,12 +510,20 @@ class visual_comp:
                                     
                                     
                                     my_map = merged_metro.plot(column=tt_col, linewidth=0.02, legend=True, cmap="RdYlGn", scheme=class_type, k=n_classes, alpha=0.9)
-                                     # Add roads on top of the grid
-                                    # (use ax parameter to define the map on top of which the second items are plotted)
-                    #                roads.plot(ax=my_map, color="grey", legend=True, linewidth=1.2)
                                     
-                                    # Add metro on top of the previous map
-                    #                metro.plot(ax=my_map, color="yellow", legend=True, linewidth=2.0)
+                                    if roads is not None:
+                                         # Add roads on top of the grid
+                                        # (use ax parameter to define the map on top of which the second items are plotted)
+                                        roads.plot(ax=my_map, color=roads_color, legend=True, linewidth=1.2)
+                                   
+                                    if metro is not None:
+                                        # Add metro on top of the previous map
+                                        metro.plot(ax=my_map, color=metro_color, legend=True, linewidth=2.0)
+                                    
+                                    if train is not None:
+                                        # Add metro on top of the previous map
+                                        train.plot(ax=my_map, color=train_color, legend=True, linewidth=2.0)
+                                
                                     
                                     ## Insert a circle on top of the Central Railway Station (coords in EurefFIN-TM35FIN)
                                     dest_grid_x = (df.loc[df["YKR_ID"]==element, 'x'].values[0])[2]
