@@ -72,14 +72,18 @@ class AccessVizError(Exception):
 
 class visual_comp:
     def vis_compare(data_zip,userinput, filepath, grid_shp, sea=None, roads=None,
-                    train=None, metro=None,compare_mod=[], visualisation=True, map_type='interactive', 
+                    train=None, metro=None,compare_mod=[], create_shapefiles=True, visualisation=True, map_type='interactive', 
                     destination_style='grid', destination_color='yellow',
                     roads_color='grey', metro_color='red', train_color='blue',
             classification='pysal_class', class_type="Quantiles", n_classes=8,
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
             class_lower_limit="", class_upper_limit="", class_step="", label_lower_limit="", label_upper_limit="", label_step=""):
 
-#
+            if not userinput:
+                raise AccessVizError("You have not specified any travel time matrix to be merged with the grid. \n Check the parameter -'userinput'- and include a valid travel time matrix")
+        
+            if create_shapefiles==False and visualisation==False:
+                raise AccessVizError("You have not specified any action to create shapefiles or visualise. \n Check the parameters!. Either 'create_shapefiles' or 'visualisation' has to be True.")
             
             grid_shp=grid_shp.to_crs(from_epsg(3067))
             
@@ -198,7 +202,7 @@ class visual_comp:
     #                            break
                         elif len(compare_mod)==2:
                             if compare_mod[0]==compare_mod[1]:
-                                raise AccessVizError("WARNING: You are comparing the same travel modes\n")
+                                raise AccessVizError("WARNING: You are comparing the same travel mode\n")
     #                            break
                             elif compare_mod[0][-1] != compare_mod[1][-1]:
                                 raise AccessVizError("WARNING!:You cannot compare Travel Distance with Travel Time!!!\n")
@@ -217,7 +221,8 @@ class visual_comp:
                         merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                         
                         #check if list is empty.
-                        if not compare_mod:
+                        if not compare_mod and create_shapefiles==True:
+                          print('NOTE: You did not specify any travel mode. Therefore, only the travel time matrix' , element, 'and the grid shapefile will be produced ')
                           merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
                     
                         else:
@@ -253,9 +258,9 @@ class visual_comp:
 #                             data["pt_diff_car_tt"] = mode1_vs_mode2
 # =============================================================================
              
-                            
-                            #now, export the result
-                            merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + tt_col + "_" +str(element) + ".shp")
+                            if create_shapefiles==True:
+                                #now, export the result
+                                merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + tt_col + "_" +str(element) + ".shp")
                             
                             
                             if visualisation==True:
