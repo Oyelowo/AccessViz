@@ -351,7 +351,7 @@ class visual:
                         
                         if sea is not None:
                             #add water
-                            s= p.patches('xs', 'ys', source=sea_source, color='#6baed6', legend='water')
+                            s= p.patches('xs', 'ys', source=sea_source, color='#6baed6', legend='Sea')
                                     
                         
                         # Add polygon grid and a legend for it
@@ -447,7 +447,7 @@ class visual:
                         dest_grid.loc[1,"geometry"]=dest_grid_loc
                         #r_s["geometry"]=r_s["geometry"].to_crs(crs=gridCRS)
                         
-                        dest_grid.plot(ax=my_map, color= "blue", legend=True, linewidth=1.5)
+                        dest_grid.plot(ax=my_map, color= destination_color, legend=True, linewidth=1.5)
                         
        
 #                        plt.legend(["roads", "metro line",'train'])

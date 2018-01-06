@@ -24,46 +24,40 @@ Created on Thu Dec 28 17:54:06 2017
 # =============================================================================
 
 
-from bokeh.palettes import YlOrRd6 as palette
 
 from bokeh.plotting import figure, save
-#from bokeh.io import show
-#from bokeh.layouts import column, row
-#from bokeh.models import Div
-from bokeh.io import output_file, show
 from bokeh.models import Title
 from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper, GeoJSONDataSource
-
-from bokeh.palettes import RdYlGn10 as palette5
+#from bokeh.palettes import RdYlGn10 as palette5
 from shapely.geometry import Point
-
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
-from matplotlib import legend
+#from matplotlib.font_manager import FontProperties
+#from matplotlib import legend
 import pysal as ps
-
-import numpy as np
 import pandas as pd
 import textwrap
 from get_geom import get_geom
 from fiona.crs import from_epsg
-
-
+from bokeh.palettes import RdYlGn11 as palette2
+#import numpy as np
+#from bokeh.palettes import YlOrRd6 as palette
+#from bokeh.io import show
+#from bokeh.layouts import column, row
+#from bokeh.models import Div
+#from bokeh.io import output_file, show
 #from bokeh.core.properties import values
-
 #from bokeh.plotting import figure, save
-#
 #from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
 #import bokeh.models.mappers.ColorMapper
-from bokeh.models.mappers import CategoricalColorMapper, ContinuousColorMapper,LinearColorMapper
+#from bokeh.palettes import BrBG10 as palette3
+#from bokeh.palettes import RdYlGn9 as palette4
+#from bokeh.models.mappers import CategoricalColorMapper, ContinuousColorMapper,LinearColorMapper
 #import bokeh.sampledata
 #bokeh.sampledata.download()
-
 #from bokeh.palettes import RdYlGn10 as palette
-from bokeh.palettes import RdYlGn11 as palette2
-from bokeh.palettes import BrBG10 as palette3
-from bokeh.palettes import RdYlGn9 as palette4
+
+
 
 
 class AccessVizError(Exception):
@@ -79,6 +73,8 @@ class visual_comp:
             multiples=[-2, -1, 1, 2],  pct=0.1, hinge=1.5, truncate=True, pct_classes=[1,10,50,90,99,100],
             class_lower_limit="", class_upper_limit="", class_step="", label_lower_limit="", label_upper_limit="", label_step=""):
 
+            if create_shapefiles==False and visualisation==True and not compare_mod:
+                raise AccessVizError("When visualising, you have to specify the two travel modes to compare. Check the 'userinput' and include, two travel modes")
             if not userinput:
                 raise AccessVizError("You have not specified any travel time matrix to be merged with the grid. \n Check the parameter -'userinput'- and include a valid travel time matrix")
         
@@ -464,7 +460,7 @@ class visual_comp:
                                     
                                     if sea is not None:
                                         #add water
-                                        s= p.patches('xs', 'ys', source=sea_source, color='#6baed6', legend='water')
+                                        s= p.patches('xs', 'ys', source=sea_source, color='#6baed6', legend='Sea')
                                     
                                     # Add polygon grid and a legend for it
                                     grid = p.patches('x', 'y', source=dfsource, name="grid",
