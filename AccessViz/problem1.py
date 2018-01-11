@@ -160,7 +160,7 @@ class explore:
             
 
     
-    def extract(zipped_data_path, filepath,userinput, sep=";", file_format=".txt"):
+    def extract(zipped_data_path, filepath,userinput, sep=";", file_format=".txt", separate_folders=False):
         """
         The function has thesame function as the function 'extract_prompt'. The only difference is that the user is prompted to input the values which should be separated by comma(,).
         This function extracts matrices(files) from the zipped Helsinki Region Travel
@@ -221,18 +221,27 @@ class explore:
                         #print the file size
                     print('has',len(bytes),'bytes')
                     print("\n")
-                    data_zip.extract(element_file)
-                    tt_matrices= pd.read_csv(element_file, sep=";")
-                        #save the selected files into same folder
+                    
+                     #export the matrices into different folders
+                if separate_folders==True:
+                    #extract the available travel time matrix out of the specified by the user.
+                    data_zip.extract(element_file, path= filepath)
+                
+                #read the data
+                tt_matrices= pd.read_csv(element_file, sep=";")
+                
+                #export all the files into thesame folder.
+                if separate_folders==False:
+                    #save the selected files into same folder
                     tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)      
-              
+             
         #check if all of the imputed values does not exist
         check_input(userinput=userinput, main_list=m_list)
         
             
         
         
-    def extract2(zipped_data_path, userinput, filepath, file_format=".txt"):
+    def extract2(zipped_data_path, userinput, filepath, sep=";", file_format=".txt", separate_folders=False):
         """
          The function has thesame function as the function 'extract_prompt'. The only difference is that the user is prompted to input the values which should be separated by comma(,).
         This function extracts matrices(files) from the zipped Helsinki Region Travel
@@ -297,13 +306,21 @@ class explore:
                     #print the file size
                     print('has',len(bytes),'bytes')
                     print("\n")
+                    
+                     #export the matrices into different folders
+                    if separate_folders==True:
+                        #extract the available travel time matrix out of the specified by the user.
+                        data_zip.extract(filename, path= filepath)
+                    
+                    #read the data
                     tt_matrices= pd.read_csv(filename, sep=";")
-                    #save the selected files into same folder
-                    tt_matrices.to_csv(filepath + "/"+str(element)+file_format, sep=";")
                     
-                    
-                    #extract the files
-                    data_zip.extract(filename)
+                    #export all the files into thesame folder.
+                    if separate_folders==False:
+                        #save the selected files into same folder
+                        tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)
+                        
+             
                     
         #check if all of the imputed values does not exist
         check_input(userinput=userinput, main_list=m_list)
@@ -311,7 +328,7 @@ class explore:
             
         
         
-    def extract_Prompt2(zipped_data_path, filepath, sep=";", file_format=".txt"):
+    def extract_prompt2(zipped_data_path, filepath, sep=";", file_format=".txt", separate_folders=False):
         """
         This function extracts matrices(files) from the zipped Helsinki Region Travel
         Time Matrix, according to the specified userinputs(matrix ID) which is the grid YKR_ID. It also states if
@@ -376,12 +393,19 @@ class explore:
                     print('matrix ', element, 'has',len(bytes),'bytes')
                     print("\n")
                     
-                    #extract the files
-                    data_zip.extract(filename)
-                    tt_matrices= pd.read_csv(filename, sep=";")
-                    #save the selected files into same folder
-                    tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)
+                     #export the matrices into different folders
+                    if separate_folders==True:
+                        #extract the available travel time matrix out of the specified by the user.
+                        data_zip.extract(filename, path= filepath)
                     
+                    #read the data
+                    tt_matrices= pd.read_csv(filename, sep=";")
+                    
+                    #export all the files into thesame folder.
+                    if separate_folders==False:
+                        #save the selected files into same folder
+                        tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)
+                        
         #check if all of the imputed values does not exist
         check_input(userinput=userinput, main_list=m_list)
 
@@ -390,12 +414,12 @@ class explore:
 
 
   
-    def create_shp(zipped_data_path, userinput, grid_shp, filepath):
+    def create_shp(zipped_data_path,userinput, grid_shp, filepath, separate_folder=False):
         
         
         data_zip = zipfile.ZipFile(zipped_data_path, "r")
         
-        
+        #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist= data_zip.namelist()
         m_list=[]
         #iterate over the userinput, to get all its element/values
@@ -426,7 +450,13 @@ class explore:
                 tt_matrices= pd.read_csv(element_file, sep=";")
                 merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                 #print(merged_metro)
-                merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
+                #merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
+                 
+                if separate_folder==True:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element))                
+                else:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+               
                     
         #check if all of the imputed values does not exist
         check_input(userinput=userinput, main_list=m_list)
@@ -434,11 +464,9 @@ class explore:
     
     
    
-    def create_shp2(zipped_data_path,userinput, grid_shp, filepath):
+    def create_shp2(zipped_data_path,userinput, grid_shp, filepath, separate_folder=False):
         
-        #read the zipped travel time matrices
         data_zip = zipfile.ZipFile(zipped_data_path, "r")
-        
         namelist= data_zip.namelist()
         m_list=[]
         for filename in namelist:
@@ -451,8 +479,12 @@ class explore:
                     tt_matrices= pd.read_csv(filename, sep=";")
                     merged_metro = pd.merge(grid_shp,tt_matrices,  left_on="YKR_ID", right_on="from_id")
                     #print(merged_metro)
-                    merged_metro.to_file(driver= 'ESRI Shapefile', filename= filepath+"/"+str(element)+".shp")
-                    
+                    if separate_folder==True:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element))                
+                    else:
+                        merged_metro.to_file(driver = 'ESRI Shapefile', filename= filepath+"/travel_times_to_" + str(element) + ".shp")
+       
+                 
        #check if all of the imputed values does not exist
         check_input(userinput=userinput, main_list=m_list)
     
