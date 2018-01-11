@@ -106,16 +106,19 @@ class explore:
         
         #Extract the name lists from the zipped file
         namelist= data_zip.namelist()
+        
                 
         #create an empty list which will be used later to include the available inputs out of 
         #the specified inputs by the user.
         m_list=[]
          
         #iterate over the userinput, to get all its element/values
-        for element in userinput:
+        for element in namelist:
             
-            #concatenate the input with the strings to get the standard names of the file
-            element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            #concatenate the input with the strings to get the standard names of the file.
+            #here namelist[0] is "HelsinkiRegion_TravelTimeMatrix2015/" . I did this to 
+            #increase the flexibility in case the travel time matrix year is changed.
+            element_file=(namelist[0] +str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
             
             #now, check if the file is not in  namelist of all the files in the ziped folder.
             #if it is not, give the warning
@@ -195,45 +198,48 @@ class explore:
         m_list=[]
         #iterate over all the names in the namelist of the zipped folders
         for element in userinput:
-                element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
-           
+                #concatenate the input with the strings to get the standard names of the file.
+            #here namelist[0] is "HelsinkiRegion_TravelTimeMatrix2015/" . I did this to 
+            #increase the flexibility in case the travel time matrix year is changed.
+            element_file=(namelist[0] +str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            
             #iterate over the userinput, to get all its element/values
             
-                #when each element is converted to string, check if the length
-                #of the string is equal to normal length of every matrix ID(i.e, 7)
-                # and also if the element is in the filename in the namelist
-                if element_file not in namelist:
-                    print("WARNING: The specified matrix {0} is not available".format(element))
-                    print("\n")
-                else:
-                    print("Matrix {0} is available".format(element))
-                                        #check for the progress
-                    print("Processing file travel_times_to_{0}.txt.. Progress: {1}/{2}".format(element,len([i for i in range(len(m_list))]), len(userinput)))
-                    
-                    #The above can also simply be done as below
-                    #slice the string. This is used for the following step, just
-                    #to know which of the matrix is presently being extracted.
-                    #f_slice=filename[44:]
-                    #print("processing file {0}.. Progress: {1}/{2}".format(f_slice,len([i for i in range(len(m_list))]), len(m_list)))
-                    
-                    m_list.append(element)
-                    bytes = data_zip.read(element_file)
-                        #print the file size
-                    print('has',len(bytes),'bytes')
-                    print("\n")
-                    
-                     #export the matrices into different folders
-                if separate_folders==True:
-                    #extract the available travel time matrix out of the specified by the user.
-                    data_zip.extract(element_file, path= filepath)
+            #when each element is converted to string, check if the length
+            #of the string is equal to normal length of every matrix ID(i.e, 7)
+            # and also if the element is in the filename in the namelist
+            if element_file not in namelist:
+                print("WARNING: The specified matrix {0} is not available".format(element))
+                print("\n")
+            else:
+                print("Matrix {0} is available".format(element))
+                                    #check for the progress
+                print("Processing file travel_times_to_{0}.txt.. Progress: {1}/{2}".format(element,len([i for i in range(len(m_list))]), len(userinput)))
                 
-                #read the data
-                tt_matrices= pd.read_csv(element_file, sep=";")
+                #The above can also simply be done as below
+                #slice the string. This is used for the following step, just
+                #to know which of the matrix is presently being extracted.
+                #f_slice=filename[44:]
+                #print("processing file {0}.. Progress: {1}/{2}".format(f_slice,len([i for i in range(len(m_list))]), len(m_list)))
                 
-                #export all the files into thesame folder.
-                if separate_folders==False:
-                    #save the selected files into same folder
-                    tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)      
+                m_list.append(element)
+                bytes = data_zip.read(element_file)
+                    #print the file size
+                print('has',len(bytes),'bytes')
+                print("\n")
+                
+                 #export the matrices into different folders
+            if separate_folders==True:
+                #extract the available travel time matrix out of the specified by the user.
+                data_zip.extract(element_file, path= filepath)
+            
+            #read the data
+            tt_matrices= pd.read_csv(element_file, sep=";")
+            
+            #export all the files into thesame folder.
+            if separate_folders==False:
+                #save the selected files into same folder
+                tt_matrices.to_csv(filepath + "/"+str(element)+ file_format, sep)      
              
         #check if all of the imputed values does not exist
         check_input(userinput=userinput, main_list=m_list)
@@ -424,8 +430,11 @@ class explore:
         m_list=[]
         #iterate over the userinput, to get all its element/values
         for element in userinput:
-            #concatenate the input with the standard names of the file
-            element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            #concatenate the input with the strings to get the standard names of the file.
+            #here namelist[0] is "HelsinkiRegion_TravelTimeMatrix2015/" . I did this to 
+            #increase the flexibility in case the travel time matrix year is changed.
+            element_file=(namelist[0] +str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            
             #now, check if the file is in not namelist of all the files in the ziped folder.
             #if it is not, give the warning
             if element_file not in namelist:
@@ -585,8 +594,11 @@ class explore:
         m_list=[]
         #iterate over the userinput, to get all its element/values
         for element in userinput:
-            #concatenate the input with the standard names of the file
-            element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            #concatenate the input with the strings to get the standard names of the file.
+            #here namelist[0] is "HelsinkiRegion_TravelTimeMatrix2015/" . I did this to 
+            #increase the flexibility in case the travel time matrix year is changed.
+            element_file=(namelist[0] +str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            
             #now, check if the file is in not namelist of all the files in the ziped folder.
             #if it is not, give the warning
             if element_file not in namelist:
@@ -1021,8 +1033,12 @@ class explore:
         m_list=[]
         #iterate over the userinput, to get all its element/values
         for element in userinput:
-            #concatenate the input with the standard names of the file
-            element_file=("HelsinkiRegion_TravelTimeMatrix2015/"+str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+           #concatenate the input with the strings to get the standard names of the file.
+            #here namelist[0] is "HelsinkiRegion_TravelTimeMatrix2015/" . I did this to 
+            #increase the flexibility in case the travel time matrix year is changed.
+            element_file=(namelist[0] +str(element)[0:4]+"xxx/travel_times_to_ "+ str(element) + ".txt")
+            
+            
             #now, check if the file is in not namelist of all the files in the ziped folder.
             #if it is not, give the warning
             if element_file not in namelist:
