@@ -232,7 +232,7 @@ class explore:
             
         
         
-    def extract2(data_zip, userinput, filepath, file_format=".txt"):
+    def extract2(zipped_data_path, userinput, filepath, file_format=".txt"):
         """
          The function has thesame function as the function 'extract_prompt'. The only difference is that the user is prompted to input the values which should be separated by comma(,).
         This function extracts matrices(files) from the zipped Helsinki Region Travel
@@ -255,6 +255,9 @@ class explore:
         separate_folder(True/False): this determines if the files should be extracted into same folder or separate folders. Default value is False.    
        
         """
+        
+        #read the zipped travel time matrices
+        data_zip = zipfile.ZipFile(zipped_data_path, "r")
            
         #Extract the names of all the lists from the zipped file
         namelist= data_zip.namelist()
@@ -308,7 +311,7 @@ class explore:
             
         
         
-    def extract_Prompt2(data_zip, filepath, sep=";", file_format=".txt"):
+    def extract_Prompt2(zipped_data_path, filepath, sep=";", file_format=".txt"):
         """
         This function extracts matrices(files) from the zipped Helsinki Region Travel
         Time Matrix, according to the specified userinputs(matrix ID) which is the grid YKR_ID. It also states if
@@ -330,6 +333,10 @@ class explore:
         
         userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         #This can also be done by just including the list in the argument.
+        
+        #read the zipped travel time matrices
+        data_zip = zipfile.ZipFile(zipped_data_path, "r")
+        
         #Extract the names of all the lists from the zipped file
         namelist= data_zip.namelist()
         
@@ -385,6 +392,7 @@ class explore:
   
     def create_shp(zipped_data_path, userinput, grid_shp, filepath):
         
+        
         data_zip = zipfile.ZipFile(zipped_data_path, "r")
         
         
@@ -426,8 +434,11 @@ class explore:
     
     
    
-    def create_shp2(data_zip,userinput, grid_shp, filepath):
-        #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
+    def create_shp2(zipped_data_path,userinput, grid_shp, filepath):
+        
+        #read the zipped travel time matrices
+        data_zip = zipfile.ZipFile(zipped_data_path, "r")
+        
         namelist= data_zip.namelist()
         m_list=[]
         for filename in namelist:
@@ -460,7 +471,7 @@ class explore:
 
 
 
-    def show_travel_mode(data_zip,userinput, tt_col, filepath, grid_shp, sea=None, roads=None,train=None, 
+    def show_travel_mode(zipped_data_path,userinput, tt_col, filepath, grid_shp, sea=None, roads=None,train=None, 
             metro=None,compare_mod=[], visualisation=True,roads_color='grey', metro_color='red', 
             train_color='blue',map_type='interactive', destination_style='grid', destination_color='blue',       
             classification='pysal_class', class_type="Quantiles", n_classes=8,
@@ -534,7 +545,8 @@ class explore:
             sea_source = GeoJSONDataSource(geojson=sea.to_json())
                             
                    
-        
+         #read the zipped travel time matrices
+        data_zip = zipfile.ZipFile(zipped_data_path, "r")
         
         #userinput= [int(x) for x in input("list the ID-numbers you want to read and separate each by a comma(,): ").split(',')]
         namelist=data_zip.namelist()
@@ -864,9 +876,31 @@ class explore:
         
         
         
+        
+        
+# =============================================================================
+# 4. AccessViz can also compare travel times or travel distances between two 
+# different travel modes (more than two travel modes are not allowed). Thus IF 
+# the user has specified two travel modes (passed in as a list) for the AccessViz, 
+# the tool will calculate the time/distance difference of those travel modes into 
+# a new data column that should be created in the Shapefile. The logic of the 
+# calculation is following the order of the items passed on the list where first 
+# travel mode is always subtracted by the last one: travelmode1 - travelmode2. 
+# The tool should ensure that distances are not compared to travel times and vice 
+# versa. If the user chooses to compare travel modes to each other, you should 
+# add the travel modes to the filename such as Accessibility_5797076_pt_vs_car.shp. 
+# If the user has not specified any travel modes, the tool should only create the 
+# Shapefile but not execute any calculations. It should be only possible to compare 
+# two travel modes between each other at the time. Accepted travel modes are the 
+# same ones that are found in the actual TravelTimeMatrix file (pt_r_tt, car_t, etc.). 
+# If the user specifies something else, stop the program, and give advice what are 
+# the acceptable values.
+# =============================================================================
 
 
-    def compare_travel_modes(data_zip,userinput, filepath, grid_shp, sea=None, roads=None,
+
+
+    def compare_travel_modes(zipped_data_path,userinput, filepath, grid_shp, sea=None, roads=None,
         train=None, metro=None,compare_mod=[], create_shapefiles=True, visualisation=True, 
         map_type='interactive', destination_style='grid', destination_color='yellow',
         roads_color='grey', metro_color='red', train_color='blue',classification='pysal_class', 
@@ -948,6 +982,8 @@ class explore:
             sea_source = GeoJSONDataSource(geojson=sea.to_json())
                                    
 
+        #read the zipped travel time matrices
+        data_zip = zipfile.ZipFile(zipped_data_path, "r")
 
         namelist=data_zip.namelist()
         m_list=[]
@@ -1386,21 +1422,10 @@ class explore:
                                 plt.savefig(outfp, dpi=300)
                 
                                     
-        #put into an object the inputs are not in the matrix list(i.e which of the specified is not in the zipped matrices)
-        absentinput= [i for i in userinput if i not in m_list]
-        
         #check if all of the imputed values does not exist
-        if len(absentinput)==len(userinput):
-            print("all the inputs do not exist")
-            
-            #check for those that are not included in the matrices
-        elif any(absentinput) not in m_list:
-            #warn that they do not exist
-            print("WARNING: ", (str(absentinput)).strip('[]'), "are not available in the matrices")
-            #check how many of them are not in the matrices
-            print(len(absentinput), "of the inputs are not included in the matrices")    
-            print("\n")
-                                        
+        check_input(userinput=userinput, main_list=m_list)
+                       
+        #tell the user if no grid ID has been specified and the action taken as a result.                 
         merged_files=[i for i in userinput if i in m_list]
         if not compare_mod:
             if len(userinput)==1:
